@@ -215,6 +215,25 @@
   .stepper button:active { box-shadow: var(--press); }
   .stepper input { background: var(--bg); border-radius: 9px; box-shadow: var(--press); padding: 2px 6px; }
 
+  /* Phone or tablet turned sideways: only the timer, as large as the screen allows. Turn back to portrait for settings.
+     Kept last so these sizes win over the normal ones. Display only: timing code is unchanged. */
+  @media (orientation: landscape) and (pointer: coarse) {
+    html, body { overflow: hidden; }
+    .app { max-width: none; height: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; padding-block: 10px; }
+    .app > *:not(.dial-wrap) { display: none !important; }
+    .app > .dial-wrap { width: min(100%, calc(100vh - 20px)); width: min(100%, calc(100dvh - 20px)); margin: 0; }
+    .app > .dial-wrap.bar { width: 100%; height: 100%; }
+    .dial.bar { height: 100%; }
+    .ratio { font-size: clamp(64px, 24vmin, 180px); }
+    .dial.bar .ratio { font-size: clamp(56px, 20vmin, 150px); }
+    .ratio-sub, .status { font-size: clamp(13px, 3.2vmin, 22px); }
+    .cue { font-size: clamp(11px, 2.6vmin, 18px); padding: 0.25em 0.7em; }
+    .pend { width: 88%; height: clamp(30px, 10vmin, 72px); margin-block: 2vmin 0.5vmin; }
+    .pend-fill { top: 24%; bottom: 24%; }
+    .pend-head { width: clamp(8px, 1.6vmin, 14px); margin-left: calc(clamp(8px, 1.6vmin, 14px) / -2); }
+    .pend-caps { width: 88%; font-size: clamp(11px, 2.8vmin, 18px); height: 1.4em; }
+  }
+
   @media (prefers-reduced-motion: reduce) { .halo.flash { animation: none; } }
 </style>
 </head>
@@ -727,7 +746,6 @@
   render();
 })();
 </script>
-
 <script>
   // Offline support. Runs only over https (GitHub Pages) or localhost; opening the file directly skips it.
   if ('serviceWorker' in navigator && window.isSecureContext) {

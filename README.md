@@ -41,6 +41,7 @@ Open the link on your phone, tap the dial, and swing on the beeps.
 - **Two sounds.** Soft **Tone** or sharp **Beep**.
 - **Rest between reps.** 1.0, 1.6 or 2.5 seconds.
 - **Bluetooth delay.** Wireless earbuds play sound late. Set the delay (0 to 500 ms, steps of 10, or type a number) until the light changes exactly when you hear the beep. Leave it at 0 for wired headphones or the phone speaker.
+- **Focus mode.** Turn your phone sideways and only the timer is shown, as large as the screen allows. Turn it back to change settings.
 - **English and Japanese**, light and dark mode (follows your phone), and the screen stays awake while playing.
 - **Private.** Everything runs on your phone. Settings are saved only on your device.
 
