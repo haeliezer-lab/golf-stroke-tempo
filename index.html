@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Stroke Tempo">
+<meta name="apple-mobile-web-app-title" content="Golf Stroke Tempo">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }</style>
 <title>Golf Stroke Tempo</title>
@@ -217,7 +217,7 @@
 
   /* Phone or tablet turned sideways: only the timer, as large as the screen allows. Turn back to portrait for settings.
      Kept last so these sizes win over the normal ones. Display only: timing code is unchanged. */
-  @media (orientation: landscape) and (pointer: coarse) {
+  @media (orientation: landscape) and (pointer: coarse), (orientation: landscape) and (hover: none), (orientation: landscape) and (max-height: 500px) {
     html, body { overflow: hidden; }
     .app { max-width: none; height: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; padding-block: 10px; }
     .app > *:not(.dial-wrap) { display: none !important; }

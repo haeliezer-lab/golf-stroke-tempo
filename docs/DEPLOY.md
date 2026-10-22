@@ -60,16 +60,16 @@ Share the address over LINE or anywhere else. Friends open it and add it the sam
 ## Publishing updates
 
 1. Edit the file on GitHub (pencil icon), or upload a replacement with **Add file → Upload files**.
-2. **Always** also edit `sw.js` and bump the version on line 2, for example `golf-stroke-tempo-v1` → `golf-stroke-tempo-v2`. Without this, installed copies keep showing the old version.
+2. If you changed an **icon**, also edit `sw.js` and bump `VERSION`, for example `golf-stroke-tempo-v2` → `golf-stroke-tempo-v3`. Page changes don't need this.
 3. Commit. GitHub Pages republishes within a minute or two.
-4. On phones, open the app once with internet. It downloads the update in the background; close and reopen it to see the changes.
+4. On phones, open the app with internet and the newest version loads. A phone that had a much older copy may need to open it twice.
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---|---|
 | 404 page at the address | Wait 2 minutes after enabling Pages. Check that `index.html` is at the top level of the repo, not inside a subfolder. |
-| Changes don't appear on the phone | Bump the version in `sw.js`, commit, then open the app twice with internet. |
+| Changes don't appear on the phone | Open the app twice with internet. If it still shows the old version, bump `VERSION` in `sw.js` and commit. |
 | No "Install app" on Android | Use Chrome, not the LINE in-app browser. In LINE, tap ⋮ → *Open in browser* first. |
 | No "Add to Home Screen" on iPhone | Use Safari. Other browsers and in-app browsers on iPhone may hide it. |
 | No sound on iPhone | Turn off the silent switch and raise the media volume. |
@@ -139,16 +139,16 @@ GitHub 上で `README.md` と `README.ja.md` を開き（ファイルをクリ�
 ## 更新するとき
 
 1. GitHub 上でファイルを編集する（鉛筆アイコン）か、**Add file → Upload files** で差し替えます。
-2. **必ず** `sw.js` も編集し、2行目のバージョンを上げてください（例：`golf-stroke-tempo-v1` → `golf-stroke-tempo-v2`）。これを忘れると、インストール済みのアプリが古いままになります。
+2. **アイコン**を変更した場合は、`sw.js` の `VERSION` も上げてください（例：`golf-stroke-tempo-v2` → `golf-stroke-tempo-v3`）。ページの変更だけなら不要です。
 3. コミットすると、1〜2分で GitHub Pages に反映されます。
-4. スマホでは、インターネット接続中に一度アプリを開くと裏で更新されます。閉じて開き直すと新しい版になります。
+4. スマホでインターネット接続中にアプリを開くと、最新版が読み込まれます。かなり古い版が入っている場合は、2回開いてください。
 
 ## うまくいかないとき
 
 | 症状 | 対処 |
 |---|---|
 | アドレスを開くと 404 になる | Pages を有効にしてから2分ほど待ってください。`index.html` がサブフォルダではなくリポジトリのトップにあるか確認してください。 |
-| スマホで変更が反映されない | `sw.js` のバージョンを上げてコミットし、インターネット接続中にアプリを2回開いてください。 |
+| スマホで変更が反映されない | インターネット接続中にアプリを2回開いてください。それでも古い場合は `sw.js` の `VERSION` を上げてコミットします。 |
 | Android で「アプリをインストール」が出ない | LINE 内のブラウザではなく Chrome で開いてください。LINE では ⋮ →「ブラウザで開く」を選びます。 |
 | iPhone で「ホーム画面に追加」が出ない | Safari で開いてください。他のブラウザやアプリ内ブラウザでは表示されないことがあります。 |
 | iPhone で音が鳴らない | 消音スイッチをオフにし、メディアの音量を上げてください。 |

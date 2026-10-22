@@ -123,13 +123,13 @@ python3 -m http.server 8000
 
 ## Updating
 
-After changing any file, open `sw.js` and bump the version on line 2:
+Edit, commit and push. Phones load the newest page whenever they have internet, so changes show up the next time the app is opened (if a phone had an older copy, open it twice).
+
+If you change an **icon**, also bump `VERSION` in `sw.js`:
 
 ```js
-const VERSION = 'golf-stroke-tempo-v2';   // was v1
+const VERSION = 'golf-stroke-tempo-v3';   // was v2
 ```
-
-Commit and push. Installed copies switch to the new version the next time they are opened with internet.
 
 ## Browser support
 
