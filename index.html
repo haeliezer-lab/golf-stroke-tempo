@@ -234,6 +234,75 @@
     .pend-caps { width: 88%; font-size: clamp(11px, 2.8vmin, 18px); height: 1.4em; }
   }
 
+  /* ================= Breathe tab: box breathing in soft pastel blue ================= */
+  :root {
+    /* Calm = low saturation (research: saturation drives arousal, blue is the least arousing hue, light muted colors feel most pleasant) */
+    --b-bg: #edf2f5; --b-surface: #f7f9fb; --b-fg: #2b3d4c; --b-muted: #6b7d8b; --b-line: #dbe4ea;
+    --b-track: #dde6ec; --b-accent: #cfdde7; --b-accent-fg: #2b3d4c; --b-trail: #8eaabd; --b-dot: #ffffff;
+    --b-fill1: #e6eef3; --b-fill2: #c3d5e1; --b-lo: rgba(70, 95, 115, 0.14); --b-hi: rgba(255, 255, 255, 0.9);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --b-bg: #141b21; --b-surface: #1a232a; --b-fg: #d5e0e8; --b-muted: #8597a4; --b-line: #26323b;
+      --b-track: #26323b; --b-accent: #3a4e5d; --b-accent-fg: #dbe6ee; --b-trail: #7d9cb1; --b-dot: #c9d8e3;
+      --b-fill1: #1d2a33; --b-fill2: #2c4050; --b-lo: rgba(0, 0, 0, 0.5); --b-hi: rgba(255, 255, 255, 0.035);
+    }
+  }
+  :root[data-theme="dark"] {
+    --b-bg: #141b21; --b-surface: #1a232a; --b-fg: #d5e0e8; --b-muted: #8597a4; --b-line: #26323b;
+    --b-track: #26323b; --b-accent: #3a4e5d; --b-accent-fg: #dbe6ee; --b-trail: #7d9cb1; --b-dot: #c9d8e3;
+    --b-fill1: #1d2a33; --b-fill2: #2c4050; --b-lo: rgba(0, 0, 0, 0.5); --b-hi: rgba(255, 255, 255, 0.035);
+  }
+  body.tab-breathe {
+    --bg: var(--b-bg); --surface: var(--b-surface); --fg: var(--b-fg); --muted: var(--b-muted); --line: var(--b-line);
+    --track: var(--b-track); --accent: var(--b-accent); --accent-fg: var(--b-accent-fg); --lo: var(--b-lo); --hi: var(--b-hi);
+    --accent-top: color-mix(in srgb, var(--accent) 88%, #ffffff);
+    --raise: 3px 4px 10px var(--lo), -3px -3px 8px var(--hi);
+    --press: inset 2px 2px 5px var(--lo), inset -2px -2px 5px var(--hi);
+  }
+
+  .tabs { width: 100%; }
+  .breathe { display: none; flex-direction: column; gap: 18px; }
+  body.tab-breathe .breathe { display: flex; }
+  body.tab-breathe .app > :is(.dial-wrap, .metrics, .presets, .row2, .sync), body.tab-breathe .app > .seg:not(.tabs) { display: none; }
+
+  .box-wrap {
+    position: relative; display: block; width: min(330px, 100%); max-width: 100%; aspect-ratio: 1; margin: 4px auto 0; padding: 0;
+    border: 0; border-radius: 34px; background: var(--surface); color: var(--fg); cursor: pointer; font: inherit;
+    box-shadow: 10px 12px 26px var(--lo), -8px -8px 20px var(--hi); container-type: inline-size;
+  }
+  .box-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .bx-track { fill: none; stroke: var(--b-track); stroke-width: 9; }
+  .bx-trail { fill: none; stroke: var(--b-trail); stroke-width: 9; stroke-linecap: round; }
+  .bx-f1 { stop-color: var(--b-fill1); } .bx-f2 { stop-color: var(--b-fill2); }
+  .bx-dot { fill: var(--b-dot); stroke: var(--b-trail); stroke-width: 4; }
+  .bx-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; pointer-events: none; padding: 18%; text-align: center; }
+  .bx-phase { font-family: var(--font-display); font-weight: 600; font-size: 26px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .bx-count { font-family: var(--font-display); font-weight: 700; font-size: 92px; line-height: 0.95; font-variant-numeric: tabular-nums; }
+  .bx-sub { font-size: 12px; color: var(--muted); text-wrap: balance; }
+  .box-wrap[data-ph="idle"] .bx-count, .box-wrap[data-ph="done"] .bx-count { font-size: 64px; }
+  .box-wrap[data-ph="done"] .bx-count { display: none; }
+  .bx-quote { margin: 0; min-height: 4.8em; display: flex; align-items: center; justify-content: center; text-align: center; text-wrap: balance;
+    font-size: 15px; line-height: 1.6; color: var(--fg); transition: opacity 0.45s ease; }
+  .bx-quote.idle { font-size: 13px; color: var(--muted); }
+  .bx-quote.fade { opacity: 0; }
+  .box-wrap[data-ph="relax"] .bx-count { display: none; }
+  .bx-len { padding: 6px; }
+  .bx-how { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 16px; background: var(--surface); box-shadow: var(--raise); font-size: 13px; line-height: 1.6; color: var(--fg); }
+  .bx-how strong { font-size: 13px; font-weight: 600; }
+  .bx-how ol { margin: 0; padding-left: 1.3em; color: var(--muted); display: flex; flex-direction: column; gap: 2px; }
+
+  @media (orientation: landscape) and (pointer: coarse), (orientation: landscape) and (hover: none), (orientation: landscape) and (max-height: 500px) {
+    body.tab-breathe .app > .dial-wrap { display: none !important; }
+    body.tab-breathe .app > .breathe { display: flex !important; flex-direction: row; gap: 4vw; align-items: center; justify-content: center; width: 100%; height: 100%; }
+    body.tab-breathe .breathe > :not(.box-wrap):not(.bx-quote) { display: none !important; }
+    body.tab-breathe .bx-quote { flex: 0 1 38vw; min-height: 0; font-size: clamp(16px, 4.4vmin, 28px); }
+    body.tab-breathe .box-wrap { width: min(100%, calc(100vh - 20px)); width: min(100%, calc(100dvh - 20px)); margin: 0; }
+    .bx-phase { font-size: clamp(22px, 6vmin, 40px); }
+    .bx-count { font-size: clamp(80px, 26vmin, 190px); }
+    .bx-sub { font-size: clamp(12px, 3vmin, 18px); }
+  }
+
   @media (prefers-reduced-motion: reduce) { .halo.flash { animation: none; } }
 </style>
 </head>
@@ -255,6 +324,11 @@
       <button id="langJa" type="button" data-lang="ja">日本語</button>
     </div>
   </header>
+
+  <div class="seg tabs" role="tablist" aria-label="Tabs">
+    <button id="tabTempo" type="button" role="tab" data-tab="tempo" data-b="tabTempo"></button>
+    <button id="tabBreathe" type="button" role="tab" data-tab="breathe" data-b="tabBreathe"></button>
+  </div>
 
   <div class="dial-wrap" id="dialWrap">
   <button class="dial" id="dial" type="button" data-sig="off">
@@ -339,6 +413,64 @@
       <button id="leadPlus" type="button" aria-label="+10 ms">+</button>
     </div>
   </div>
+
+  <section class="breathe" id="breathe" aria-label="Box breathing">
+    <button class="box-wrap" id="bxBox" type="button" data-ph="idle">
+      <svg viewBox="0 0 300 300" aria-hidden="true">
+        <defs>
+          <clipPath id="bxClip"><rect x="54" y="54" width="192" height="192" rx="16"></rect></clipPath>
+          <linearGradient id="bxFill" x1="0" y1="1" x2="0" y2="0">
+            <stop class="bx-f2" offset="0"></stop><stop class="bx-f1" offset="1"></stop>
+          </linearGradient>
+        </defs>
+        <rect id="bxLevel" x="54" y="246" width="192" height="0" fill="url(#bxFill)" clip-path="url(#bxClip)"></rect>
+        <path class="bx-track" id="bxPath" d="M40 236 L40 64 A24 24 0 0 1 64 40 L236 40 A24 24 0 0 1 260 64 L260 236 A24 24 0 0 1 236 260 L64 260 A24 24 0 0 1 40 236 Z"></path>
+        <path class="bx-trail" id="bxTrail" d="M40 236 L40 64 A24 24 0 0 1 64 40 L236 40 A24 24 0 0 1 260 64 L260 236 A24 24 0 0 1 236 260 L64 260 A24 24 0 0 1 40 236 Z"></path>
+        <circle class="bx-dot" id="bxDot" cx="40" cy="236" r="9"></circle>
+      </svg>
+      <span class="bx-center">
+        <span class="bx-phase" id="bxPhase"></span>
+        <span class="bx-count" id="bxCount"></span>
+        <span class="bx-sub" id="bxSub"></span>
+      </span>
+    </button>
+
+    <p class="bx-quote idle" id="bxQuote" aria-live="polite"></p>
+
+    <div class="metrics">
+      <div class="metric"><span data-b="mPattern"></span><strong id="bxPattern">5·5·5·5</strong></div>
+      <div class="metric"><span data-b="mSets"></span><strong id="bxRounds"></strong></div>
+      <div class="metric"><span data-b="mLeft"></span><strong id="bxTime"></strong></div>
+    </div>
+
+    <div class="group">
+      <span class="label" data-b="lblLen"></span>
+      <div class="sync bx-len">
+        <div class="seg small" role="group">
+          <button id="bxModeSets" type="button" data-bmode="sets" data-b="sets"></button>
+          <button id="bxModeMins" type="button" data-bmode="min" data-b="mins"></button>
+        </div>
+        <div class="stepper">
+          <button id="bxMinus" type="button" aria-label="−1">−</button>
+          <label><input id="bxInput" type="number" inputmode="numeric" min="1" step="1"><span class="unit" id="bxUnit"></span></label>
+          <button id="bxPlus" type="button" aria-label="+1">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <span class="label" data-b="lblSound"></span>
+      <div class="seg" role="group">
+        <button id="bxSoundOn" type="button" data-bsound="on" data-b="on"></button>
+        <button id="bxSoundOff" type="button" data-bsound="off" data-b="off"></button>
+      </div>
+    </div>
+
+    <div class="bx-how">
+      <strong data-b="howTitle"></strong>
+      <ol id="bxHow"></ol>
+    </div>
+  </section>
 
   <footer class="foot">
     <span data-i18n="footLocal"></span> <span data-i18n="footFree"></span> <span data-i18n="footThanks"></span>
@@ -742,7 +874,377 @@
   $('leadInput').addEventListener('change', e => setLead(e.target.value));
   $('leadInput').addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
 
+  window.golfTempo = { stop: () => { if (state.playing) stop(); } }; // lets the Breathe tab stop the golf timer
   resetDial();
+  render();
+})();
+</script>
+
+<script>
+/* ================= Box breathing: own audio clock, separate from the golf timer ================= */
+(() => {
+  const $ = id => document.getElementById(id);
+  const SIDE = 5;            // 5-5-5-5: inhale, hold, exhale, hold
+  const SET = 4 * SIDE;      // one set = one trip around the box = 20 s
+  const LEAD = 1.5;          // the gong, then the first inhale 1.5 s later
+  const AHEAD = 1.5;         // how far ahead sounds are booked on the audio clock
+  const LIMITS = { sets: [1, 60], min: [1, 30] };
+
+  const TXT = {
+    en: {
+      tabTempo: 'Tempo', tabBreathe: 'Breathe', title: 'Box breathing', tap: 'Tap to start', tapStop: 'Tap to stop',
+      perSide: '5 seconds per side', relax: 'Relax', inhale: 'Inhale', hold: 'Hold', exhale: 'Exhale',
+      done: 'Done', doneSub: 'Tap to go again',
+      mPattern: 'PATTERN', mSets: 'SETS', mLeft: 'TIME LEFT',
+      lblLen: 'Length', lblSound: 'Sound', sets: 'Sets', mins: 'Minutes', uSets: 'sets', uMins: 'min', on: 'On', off: 'Off',
+      setOf: (r, n) => `Set ${r} of ${n}`,
+      hint: 'In through the nose, out through the nose. A gong sounds at the start, every 5 sets, and at the end.',
+      howTitle: 'How to',
+      how: ['Sit or stand tall and let your shoulders drop.', 'Inhale through your nose for 5 seconds as the light rises up the left side.', 'Hold for 5 seconds across the top.', 'Exhale slowly through your nose for 5 seconds as the light falls down the right side.', 'Hold for 5 seconds across the bottom, then begin the next set.'],
+      doneQuote: 'Carry this calm into whatever comes next.',
+      quotes: [
+        'Just like practice.',
+        'You’ve got this.',
+        'You can do it.',
+        'This is your best state.',
+        'This calm is the best version of you.',
+        'Don’t force it. Just like practice.',
+        'Slow is smooth. Smooth is fast.',
+        'You don’t rise to the level of your goals. You fall to the level of your practice.',
+        'A calm mind makes clear choices.',
+        'Trust the work you’ve already done.',
+        'You’re ready for this.',
+        'One breath at a time.'
+      ]
+    },
+    ja: {
+      tabTempo: 'テンポ', tabBreathe: '呼吸', title: 'ボックス呼吸', tap: 'タップしてスタート', tapStop: 'タップで停止',
+      perSide: '各5秒', relax: 'リラックス', inhale: '吸って', hold: 'キープ', exhale: '吐いて',
+      done: 'おつかれさまでした', doneSub: 'タップでもう一度',
+      mPattern: 'パターン', mSets: 'セット', mLeft: '残り時間',
+      lblLen: '長さ', lblSound: 'サウンド', sets: 'セット', mins: '分', uSets: 'セット', uMins: '分', on: 'オン', off: 'オフ',
+      setOf: (r, n) => `セット ${r} / ${n}`,
+      hint: '鼻から吸って、鼻から吐きます。ゴングは開始時・5セットごと・終了時に鳴ります。',
+      howTitle: 'やり方',
+      how: ['背すじを伸ばし、肩の力を抜きます。', '光が左の辺を上がる間に、鼻から5秒かけて吸います。', '上の辺で5秒キープします。', '光が右の辺を下がる間に、鼻から5秒かけてゆっくり吐きます。', '下の辺で5秒キープし、次のセットへ進みます。'],
+      doneQuote: 'この落ち着きのまま、次へ。',
+      quotes: [
+        'いつもの練習どおりに。',
+        'あなたならできる。',
+        'きっとできる。',
+        '今が、あなたのベストな状態。',
+        'この落ち着きこそ、最高のあなた。',
+        '力まずに。いつもの練習のように。',
+        'ゆっくりは滑らか。滑らかは速い。',
+        '人は目標のレベルまで上がるのではない。練習のレベルまで落ちるのだ。',
+        '落ち着いた心が、迷いのない判断を生む。',
+        '積み重ねてきたことを信じよう。',
+        '準備はできている。',
+        '一呼吸ずつ。'
+      ]
+    }
+  };
+  const lang = () => (document.documentElement.lang === 'ja' ? 'ja' : 'en');
+  const tt = k => TXT[lang()][k];
+
+  const KEY = 'swingTempo.breathe';
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
+  const saved = load();
+  const clampTo = (mode, v) => Math.min(LIMITS[mode][1], Math.max(LIMITS[mode][0], Math.round(Number(v) || 0)));
+  const st = {
+    tab: saved.tab === 'breathe' ? 'breathe' : 'tempo',
+    mode: saved.mode === 'min' ? 'min' : 'sets',
+    sets: saved.v === 2 && Number.isFinite(saved.sets) ? clampTo('sets', saved.sets) : 7,   // default 7 sets
+    mins: Number.isFinite(saved.mins) ? clampTo('min', saved.mins) : 5,
+    sound: saved.sound === 'off' ? 'off' : 'on'
+  };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ tab: st.tab, mode: st.mode, sets: st.sets, mins: st.mins, sound: st.sound, v: 2 })); } catch {} };
+  const totalSets = () => (st.mode === 'min' ? st.mins * 3 : st.sets); // 3 sets per minute: always whole sets
+
+  /* ---------- geometry ---------- */
+  const box = $('bxBox'), path = $('bxPath'), trail = $('bxTrail'), dot = $('bxDot'), level = $('bxLevel'), quote = $('bxQuote');
+  const L = path.getTotalLength(), Q = L / 4;
+  const FILL_TOP = 54, FILL_H = 192;
+  const ease = p => 0.5 - 0.5 * Math.cos(Math.PI * p);
+  function setDot(len) { const pt = path.getPointAtLength(((len % L) + L) % L); dot.setAttribute('cx', pt.x.toFixed(2)); dot.setAttribute('cy', pt.y.toFixed(2)); }
+  function setTrail(ph, p) { trail.style.strokeDasharray = `${(p * Q).toFixed(2)} ${L}`; trail.style.strokeDashoffset = `${(-ph * Q).toFixed(2)}`; }
+  function setLevel(x) { const h = x * FILL_H; level.setAttribute('y', (FILL_TOP + FILL_H - h).toFixed(2)); level.setAttribute('height', h.toFixed(2)); }
+  const lastTxt = {};
+  function txt(id, v) { if (lastTxt[id] !== v) { lastTxt[id] = v; $(id).textContent = v; } }
+
+  /* ---------- sound design ---------- */
+  // Nasal breath: broadband noise through fixed nasal-airway resonances (no pitch glide) with a smooth airflow envelope.
+  // Nose breathing is softer and more muted than mouth breathing: highs are rolled off.
+  // Inhale through the nose is a little airier; exhale through the nose is warmer and slightly louder.
+  function breathVoice(ac, dest, buf, when, dur, inhale) {
+    const src = ac.createBufferSource(); src.buffer = buf; src.loop = true;
+    const sum = ac.createGain(); sum.gain.value = 1;
+    const bands = inhale
+      ? [[650, 2.5, -22], [1400, 3, -19], [2600, 2.5, -17], [4200, 3, -27]]
+      : [[300, 2, -11], [850, 2.5, -10], [1800, 3, -16]];
+    bands.forEach(([f, q, db]) => {
+      const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q;
+      const g = ac.createGain(); g.gain.value = Math.pow(10, db / 20);
+      src.connect(bp); bp.connect(g); g.connect(sum);
+    });
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = inhale ? 4800 : 2400; lp.Q.value = 0.5;
+    const env = ac.createGain(); env.gain.value = 0;
+    const n = 96, curve = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const x = i / (n - 1);
+      const s = t => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);       // smoothstep
+      curve[i] = inhale
+        ? s(x / 0.2) * (0.88 + 0.12 * s((x - 0.2) / 0.5)) * (1 - s((x - 0.72) / 0.28))
+        : s(x / 0.1) * (1 - 0.4 * s((x - 0.1) / 0.6)) * (1 - s((x - 0.7) / 0.3));
+    }
+    env.gain.setValueCurveAtTime(curve, when, dur);
+    sum.connect(lp); lp.connect(env); env.connect(dest);
+    src.start(when, Math.random() * 3); src.stop(when + dur + 0.05);
+    return [src];
+  }
+
+  // Gong: low inharmonic partials with a long, smooth ring and a felt-mallet strike.
+  // One clean tone per partial, so the tail fades evenly instead of wobbling.
+  function gongVoice(ac, dest, buf, when, vol) {
+    const out = ac.createGain(); out.gain.value = vol; out.connect(dest);
+    const nodes = [], base = 110;
+    [[1, 1, 9], [1.48, 0.5, 6.5], [2.02, 0.32, 5], [2.73, 0.24, 3.8], [3.51, 0.15, 2.8], [4.36, 0.1, 2.2], [5.4, 0.06, 1.6]].forEach(([r, a, dec]) => {
+      const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine';
+      const f = base * r;
+      o.frequency.setValueAtTime(f * 1.012, when); o.frequency.exponentialRampToValueAtTime(f, when + 0.4);
+      g.gain.setValueAtTime(0.0001, when); g.gain.linearRampToValueAtTime(a * 0.6, when + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, when + dec);
+      o.connect(g); g.connect(out); o.start(when); o.stop(when + dec + 0.05); nodes.push(o);
+    });
+    const s = ac.createBufferSource(); s.buffer = buf;
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900;
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0.0001, when); g.gain.linearRampToValueAtTime(0.5, when + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, when + 0.18);
+    s.connect(lp); lp.connect(g); g.connect(out); s.start(when); s.stop(when + 0.2); nodes.push(s);
+    return nodes;
+  }
+
+  /* ---------- audio engine ---------- */
+  let ctx = null, comp = null, master = null, noise = null, sched = null, raf = 0, wake = null;
+  let running = false, finished = false, N = 0, start = 0, nextK = 0, endNodes = null, lastSet = -1, quoteIdx = 0;
+  const phaseNodes = new Map();
+  const BREATH_GAIN = 2.2, GONG_START = 0.5, GONG_MID = 0.38, GONG_END = 0.5;
+
+  function ensureCtx() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      ctx = new AC({ latencyHint: 'interactive' });
+      comp = ctx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 3; comp.connect(ctx.destination);
+      const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.start(0); // iOS unlock
+      const len = ctx.sampleRate * 4; noise = ctx.createBuffer(1, len, ctx.sampleRate);
+      const d = noise.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    }
+    return ctx.state === 'running' ? Promise.resolve() : ctx.resume().catch(() => {});
+  }
+  function audibleNow() {
+    if (ctx.getOutputTimestamp) {
+      const ts = ctx.getOutputTimestamp();
+      if (ts && ts.contextTime > 0 && ts.performanceTime > 0) return ts.contextTime + (performance.now() - ts.performanceTime) / 1000;
+    }
+    return ctx.currentTime - (ctx.outputLatency || 0) - (ctx.baseLatency || 0);
+  }
+  const stopNodes = list => (list || []).forEach(n => { try { n.stop(); } catch {} });
+
+  // Every phase is booked ahead on the audio clock, so the pace never drifts.
+  // The session always ends after a complete set: the final bottom hold, then the closing gong.
+  function schedule() {
+    const horizon = ctx.currentTime + AHEAD;
+    for (;;) {
+      if (nextK >= 4 * N) {
+        const at = start + N * SET;
+        if (!endNodes && at <= horizon) endNodes = gongVoice(ctx, master, noise, at, GONG_END);
+        break;
+      }
+      const at = start + nextK * SIDE;
+      if (at > horizon) break;
+      const ph = nextK % 4, set = Math.floor(nextK / 4), nodes = [];
+      if (ph === 0 && set > 0 && set % 5 === 0) nodes.push(...gongVoice(ctx, master, noise, at, GONG_MID)); // after every 5 sets
+      if (ph === 0) nodes.push(...breathVoice(ctx, breathBus, noise, at, SIDE, true));
+      if (ph === 2) nodes.push(...breathVoice(ctx, breathBus, noise, at, SIDE, false));
+      phaseNodes.set(nextK, nodes);
+      phaseNodes.delete(nextK - 12);
+      nextK++;
+    }
+  }
+  let breathBus = null;
+
+  // Change the length during a session: the current set always finishes
+  function setTotal(newN) {
+    if (!running || !ctx || !master) return;
+    const kNow = Math.max(0, Math.floor((audibleNow() - start) / SIDE));
+    newN = Math.max(newN, Math.floor(kNow / 4) + 1);
+    if (newN === N) return;
+    if (endNodes) { stopNodes(endNodes); endNodes = null; }
+    if (4 * newN < nextK) {
+      for (let k = 4 * newN; k < nextK; k++) { stopNodes(phaseNodes.get(k)); phaseNodes.delete(k); }
+      nextK = 4 * newN;
+    }
+    N = newN; schedule();
+  }
+
+  async function startB() {
+    const ready = ensureCtx(); // inside the tap, as phones require
+    running = true; finished = false; renderIdle();
+    await ready;
+    if (!running) return;
+    N = totalSets();
+    master = ctx.createGain(); master.gain.value = st.sound === 'on' ? 0.9 : 0; master.connect(comp);
+    breathBus = ctx.createGain(); breathBus.gain.value = BREATH_GAIN; breathBus.connect(master);
+    const t0 = ctx.currentTime + 0.12;
+    start = t0 + LEAD; nextK = 0; endNodes = null; phaseNodes.clear(); lastSet = -1;
+    gongVoice(ctx, master, noise, t0, GONG_START);
+    showQuote(nextQuote(), false);
+    schedule(); sched = setInterval(schedule, 50);
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(draw);
+    keepAwake();
+  }
+
+  function stopB(done) {
+    running = false; finished = !!done;
+    clearInterval(sched); sched = null; cancelAnimationFrame(raf);
+    if (master && ctx) {
+      const m = master, now = ctx.currentTime, all = [...phaseNodes.values()].flat();
+      master = null; breathBus = null; phaseNodes.clear();
+      if (done) {
+        setTimeout(() => { try { m.disconnect(); } catch {} }, 9500); // let the closing gong ring out
+      } else {
+        m.gain.cancelScheduledValues(now); m.gain.setValueAtTime(m.gain.value, now); m.gain.linearRampToValueAtTime(0.0001, now + 0.25);
+        const ends = endNodes || [];
+        setTimeout(() => { stopNodes(all); stopNodes(ends); try { m.disconnect(); } catch {} }, 320);
+      }
+      endNodes = null;
+    }
+    const w = wake; wake = null; try { w?.release(); } catch {}
+    renderIdle();
+    showQuote(done ? tt('doneQuote') : tt('hint'), !done);
+  }
+
+  async function keepAwake() {
+    if (!running || document.hidden || !('wakeLock' in navigator)) return;
+    try { wake = await navigator.wakeLock.request('screen'); } catch { wake = null; }
+  }
+
+  /* ---------- encouragement: a few lines, one per set, fading in and out ---------- */
+  let quoteTimer = 0, bag = [], lastQ = -1;
+  function nextQuote() {
+    const n = tt('quotes').length;
+    if (!bag.length) {
+      bag = [...Array(n).keys()];
+      for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
+      if (bag[bag.length - 1] === lastQ && n > 1) [bag[0], bag[bag.length - 1]] = [bag[bag.length - 1], bag[0]];
+    }
+    lastQ = bag.pop(); quoteIdx = lastQ;
+    return tt('quotes')[lastQ];
+  }
+  function showQuote(text, idle) {
+    clearTimeout(quoteTimer);
+    quote.classList.add('fade');
+    quoteTimer = setTimeout(() => { quote.textContent = text; quote.classList.toggle('idle', idle); quote.classList.remove('fade'); }, 450);
+  }
+
+  const fmtTime = s => { s = Math.max(0, Math.round(s)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+
+  function draw() {
+    if (!running) return;
+    const e = audibleNow() - start;
+    if (e < 0) {
+      box.dataset.ph = 'relax';
+      txt('bxPhase', tt('relax')); txt('bxCount', ''); txt('bxSub', tt('tapStop'));
+      setDot(0); setTrail(0, 0); setLevel(0);
+      txt('bxRounds', `0 / ${N}`); txt('bxTime', fmtTime(N * SET));
+    } else {
+      const k = Math.floor(e / SIDE);
+      if (k >= 4 * N) { stopB(true); return; }
+      const ph = k % 4, within = e - k * SIDE, p = within / SIDE, set = Math.floor(k / 4);
+      const name = ['inhale', 'hold', 'exhale', 'hold'][ph];
+      box.dataset.ph = name;
+      txt('bxPhase', tt(name));
+      txt('bxCount', String(Math.max(1, Math.ceil(SIDE - within - 1e-6))));
+      txt('bxSub', tt('setOf')(set + 1, N));
+      setDot((ph + p) * Q); setTrail(ph, p);
+      setLevel(ph === 0 ? ease(p) : ph === 1 ? 1 : ph === 2 ? 1 - ease(p) : 0);
+      txt('bxRounds', `${set} / ${N}`);
+      txt('bxTime', fmtTime(N * SET - e));
+      if (set !== lastSet) {
+        if (lastSet >= 0) showQuote(nextQuote(), false);
+        lastSet = set;
+      }
+    }
+    raf = requestAnimationFrame(draw);
+  }
+
+  /* ---------- rendering ---------- */
+  function renderIdle() {
+    if (running) return;
+    box.dataset.ph = finished ? 'done' : 'idle';
+    setDot(0); setTrail(0, 0); setLevel(0);
+    if (finished) { txt('bxPhase', tt('done')); txt('bxCount', ''); txt('bxSub', tt('doneSub')); }
+    else { txt('bxPhase', tt('title')); txt('bxCount', String(SIDE)); txt('bxSub', `${tt('perSide')} · ${tt('tap')}`); }
+    const n = totalSets();
+    txt('bxRounds', `0 / ${n}`);
+    txt('bxTime', fmtTime(n * SET));
+  }
+  function renderLen() {
+    const inp = $('bxInput');
+    inp.min = LIMITS[st.mode][0]; inp.max = LIMITS[st.mode][1];
+    if (document.activeElement !== inp) inp.value = st.mode === 'min' ? st.mins : st.sets;
+    $('bxUnit').textContent = st.mode === 'min' ? tt('uMins') : tt('uSets');
+    document.querySelectorAll('[data-bmode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.bmode === st.mode));
+  }
+  function render() {
+    document.querySelectorAll('[data-b]').forEach(el => { el.textContent = tt(el.dataset.b); });
+    $('bxHow').replaceChildren(...tt('how').map(line => { const li = document.createElement('li'); li.textContent = line; return li; }));
+    document.querySelectorAll('[data-bsound]').forEach(b => b.setAttribute('aria-pressed', b.dataset.bsound === st.sound));
+    document.querySelectorAll('[data-tab]').forEach(b => { const on = b.dataset.tab === st.tab; b.setAttribute('aria-pressed', on); b.setAttribute('aria-selected', on); });
+    document.body.classList.toggle('tab-breathe', st.tab === 'breathe');
+    renderLen();
+    for (const k in lastTxt) delete lastTxt[k];
+    if (!running) { renderIdle(); quote.textContent = finished ? tt('doneQuote') : tt('hint'); quote.classList.toggle('idle', !finished); }
+    else { quote.textContent = tt('quotes')[quoteIdx]; }
+  }
+
+  function setTab(tab) {
+    if (tab === st.tab) return;
+    if (tab === 'breathe') window.golfTempo?.stop();
+    else if (running) stopB(false);
+    st.tab = tab; finished = false; save(); render();
+  }
+
+  function applyLength() {
+    save(); renderLen();
+    if (running) setTotal(totalSets()); else { finished = false; renderIdle(); }
+  }
+  function setValue(v) {
+    const key = st.mode === 'min' ? 'mins' : 'sets';
+    st[key] = clampTo(st.mode, v);
+    applyLength();
+  }
+
+  /* ---------- events ---------- */
+  box.addEventListener('click', () => running ? stopB(false) : startB());
+  document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+  document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => render()));
+  document.querySelectorAll('[data-bmode]').forEach(b => b.addEventListener('click', () => { st.mode = b.dataset.bmode; applyLength(); }));
+  $('bxMinus').addEventListener('click', () => setValue((st.mode === 'min' ? st.mins : st.sets) - 1));
+  $('bxPlus').addEventListener('click', () => setValue((st.mode === 'min' ? st.mins : st.sets) + 1));
+  $('bxInput').addEventListener('change', e => setValue(e.target.value));
+  $('bxInput').addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+  document.querySelectorAll('[data-bsound]').forEach(b => b.addEventListener('click', () => {
+    st.sound = b.dataset.bsound; save(); render();
+    if (master && ctx) { const now = ctx.currentTime; master.gain.cancelScheduledValues(now); master.gain.setValueAtTime(master.gain.value, now); master.gain.linearRampToValueAtTime(st.sound === 'on' ? 0.9 : 0.0001, now + 0.15); }
+  }));
+  // On the Breathe tab, the space bar controls breathing instead of the golf timer
+  window.addEventListener('keydown', e => {
+    if (st.tab !== 'breathe' || e.code !== 'Space' || e.target !== document.body) return;
+    e.preventDefault(); e.stopPropagation(); running ? stopB(false) : startB();
+  }, true);
+  document.addEventListener('visibilitychange', () => { if (document.hidden && running) stopB(false); });
+
   render();
 })();
 </script>

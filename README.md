@@ -5,7 +5,7 @@
 <h1 align="center">Golf Stroke Tempo</h1>
 
 <p align="center">
-  A tempo trainer for your golf swing and putting stroke.<br>
+  A tempo trainer for your golf swing and putting stroke, with a calm box-breathing tab.<br>
   Frame-accurate beeps and lights. Runs in the browser, installs to your home screen, works offline.<br>
   No account, no ads, no tracking.
 </p>
@@ -41,6 +41,7 @@ Open the link on your phone, tap the dial, and swing on the beeps.
 - **Two sounds.** Soft **Tone** or sharp **Beep**.
 - **Rest between reps.** 1.0, 1.6 or 2.5 seconds.
 - **Bluetooth delay.** Wireless earbuds play sound late. Set the delay (0 to 500 ms, steps of 10, or type a number) until the light changes exactly when you hear the beep. Leave it at 0 for wired headphones or the phone speaker.
+- **Breathe tab: box breathing.** A calm, pastel-blue second tab: 5·5·5·5, in and out through the nose, with a gentle breath sound, a gong at the start, every 5 sets and the end, and short encouraging lines. Set the length in sets or minutes. See [Box breathing](#box-breathing).
 - **Focus mode.** Turn your phone sideways and only the timer is shown, as large as the screen allows. Turn it back to change settings.
 - **English and Japanese**, light and dark mode (follows your phone), and the screen stays awake while playing.
 - **Private.** Everything runs on your phone. Settings are saved only on your device.
@@ -70,6 +71,33 @@ Then the chosen rest, and the next rep starts. **Beep** uses 1 kHz for takeaway 
 One beat at the chosen tempo: the first beep starts the stroke and the second beep, one beat later, is impact. At 90 BPM that is 0.67 s from takeaway to impact; at 80 BPM, 0.75 s.
 
 The light is green from the takeaway beep and turns yellow on the impact beep. In the bar views, the putter head travels back for two-thirds of the beat, returns through the impact line exactly on the second beep, then follows through the same distance.
+
+## Box breathing
+
+A calm second tab for settling your nerves before a round or between shots. The pattern is **5·5·5·5**, breathing **in through the nose and out through the nose**.
+
+| Side of the box | You | Sound | Inside the box |
+|---|---|---|---|
+| Up the left side | **Inhale** through the nose, 5 s | Soft nasal in-breath | Fills from the bottom |
+| Across the top | **Hold**, 5 s | Silence | Stays full |
+| Down the right side | **Exhale** through the nose, 5 s | Soft nasal out-breath | Empties |
+| Across the bottom | **Hold**, 5 s | Silence | Stays empty |
+
+One trip around the box is one **set** (20 seconds).
+
+- **Length:** choose **Sets** (default 7) or **Minutes** and type a number or use − / +. Minutes always convert to whole sets (3 per minute), and a session **always ends after a complete set**, on the final bottom hold. Changing the length during a session lets the current set finish first.
+- **Gong:** at the start, after every 5 sets, and at the end. The first inhale begins 1.5 seconds after the opening gong.
+- **Encouragement:** a short line fades in at each new set, in random order and never the same twice in a row, such as *"Just like practice."*, *"You've got this."* or *"Slow is smooth. Smooth is fast."*
+- **Calm colors:** muted, low-saturation blue-grey, light by day and dim at night. Research on color and emotion finds that saturation drives arousal and blue is the least arousing hue, so the tab avoids vivid tones.
+- **Sound:** on (gong and breath) or off (light only). Can be switched during a session.
+- **How to:** the steps are written under the controls, in English and Japanese.
+- Turn the phone sideways for the box and the encouragement line only.
+
+The breath sound is modeled on real nasal breathing: broadband airflow shaped by fixed resonances, with no pitch glide, softer highs than mouth breathing, a lighter in-breath and a warmer out-breath, each ending in a smooth fade. The gong is one clean tone per partial, so its long tail fades evenly without wobbling. Every phase is booked ahead on the phone's audio clock, so the light, the countdown and the sound change together. Starting a breathing session stops the golf timer, and switching back to Tempo stops the breathing.
+
+<p align="center">
+  <img src="docs/breathe.png" width="560" alt="Breathe tab in light mode (English) and dark mode (Japanese)">
+</p>
 
 ## Install it like an app
 
@@ -138,7 +166,7 @@ Current Safari (iOS 15 and later), Chrome, Edge and Firefox. Uses the Web Audio 
 ## Privacy
 
 - No accounts, analytics, ads or cookies.
-- Settings (language, mode, preset, sound, rest, Bluetooth delay, putting view) are stored in your browser on your device only.
+- Settings (language, mode, preset, sound, rest, Bluetooth delay, putting view, breathing options and last tab) are stored in your browser on your device only.
 - The only outside request is to Google Fonts for the typefaces. After the first visit they are cached for offline use; if they can't load, system fonts are used.
 
 ## License
