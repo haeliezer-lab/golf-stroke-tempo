@@ -86,7 +86,7 @@ A calm second tab for settling your nerves before a round or between shots. The 
 One trip around the box is one **set** (20 seconds).
 
 - **Length:** choose **Sets** (default 7) or **Minutes** and type a number or use − / +. Minutes always convert to whole sets (3 per minute), and a session **always ends after a complete set**, on the final bottom hold. Changing the length during a session lets the current set finish first.
-- **Gong:** at the start, every minute (every 3 sets), and after the last set. The first inhale begins 1.5 seconds after the opening gong.
+- **Gong:** at the start, every minute, and after the last set. The first inhale begins 1.5 seconds after the opening gong, and every minute gong works the same way: it rings exactly one minute after the one before, 1.5 seconds before that minute's first inhale, so it never sounds on top of a breath.
 - **Encouragement:** a short line fades in at each new set, in random order and never the same twice in a row, such as *"Just like practice."*, *"You've got this."* or *"Slow is smooth. Smooth is fast."*
 - **Gentle motion:** like a breath, the light moves slowly through each corner and a little faster along the middle of each side. It never stops, and it still reaches every corner exactly on the 5-second mark. Behind it, the light leaves one continuous trail that fades slowly and evenly: brightest at the light, and completely faded by the time the light comes back around, so nothing is ever cut off. After the last set, the trail fades out with the closing gong.
 - **Soft, smooth look:** no hard edges anywhere in the box. The light is a soft bead with a faint glow, the trail glows gently and has a rounded start, the track and the inner panel have softened edges, and the fill rises with a soft surface instead of a sharp waterline.
@@ -166,6 +166,8 @@ const VERSION = 'golf-stroke-tempo-v3';   // was v2
 ## Browser support
 
 Current Safari (iOS 15 and later), Chrome, Edge and Firefox. Uses the Web Audio API for timing, the Screen Wake Lock API where available, and a service worker for offline use.
+
+**Dark mode:** the app follows your phone's light or dark setting. Some browsers darken pages on their own instead (Samsung Internet's dark mode, and some in-app browsers), which can leave white text on white. The app detects this and switches to its own dark theme, so everything stays readable. On Samsung Internet you can also turn on **Labs → Use website dark theme**.
 
 ## Privacy
 

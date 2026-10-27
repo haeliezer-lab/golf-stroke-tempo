@@ -15,6 +15,30 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }</style>
 <title>Golf Stroke Tempo</title>
+<!-- The page has its own light and dark themes. Declaring both tells browsers and in-app viewers (Chrome "darken websites",
+     Android WebView, Samsung Internet) to use the page's own dark theme instead of force-darkening the light one. -->
+<meta name="color-scheme" content="light dark">
+<script id="schemeGuard">
+  // Some browsers and in-app viewers (Samsung Internet's dark mode, LINE and other Android in-app browsers, Chrome
+  // "darken websites") darken pages themselves while still reporting a light preference. Their darkening skips drawn
+  // parts (the dial centre, the breathing panel), which left white text on white. When that is happening the page
+  // switches to its own dark theme, which those browsers then leave alone. Checked on load, when the system theme
+  // changes and when the app comes back to the screen.
+  (() => {
+    const root = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)');
+    const check = () => {
+      if (root.dataset.forced) { delete root.dataset.theme; delete root.dataset.forced; }
+      if (mq.matches) return;                        // the page's own dark theme is already in use
+      const probe = document.createElement('i');
+      probe.style.cssText = 'position:absolute;visibility:hidden;color:CanvasText';
+      root.appendChild(probe); const c = (getComputedStyle(probe).color.match(/\d+/g) || [0, 0, 0]).map(Number); probe.remove();
+      if (c[0] + c[1] + c[2] > 382) { root.dataset.theme = 'dark'; root.dataset.forced = '1'; }   // light system text = being darkened
+    };
+    check();
+    try { mq.addEventListener('change', check); } catch { try { mq.addListener(check); } catch {} }
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Cormorant+Garamond:ital,wght@1,500&family=Shippori+Mincho:wght@500&display=swap">
@@ -33,7 +57,9 @@
     --flag: #e3a500; --on-flag: #1d1203;
     --font-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
     --font-body: "Noto Sans JP", system-ui, -apple-system, "Hiragino Sans", "Segoe UI", sans-serif;
+    color-scheme: light dark;
   }
+  :root[data-theme="light"] { color-scheme: light; }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --bg: #0c1210; --surface: #141c18; --fg: #eaf0eb; --muted: #8d9b92; --line: #25312a;
@@ -341,6 +367,36 @@
   }
 
   @media (prefers-reduced-motion: reduce) { .halo.flash { animation: none; } }
+
+  /* ---------- Browsers that darken pages themselves (see #schemeGuard) ----------
+     The page switches to its own dark theme. Those browsers still repaint some colours: they turn dark text and dark
+     SVG shapes light, and darken light backgrounds. Gradients with dark or vivid colours are left as they are, so the
+     dial's shapes, and dark text sitting on the bright green and yellow lights, are painted with gradients here.
+     Colours and timing are exactly the same as the normal dark theme. */
+  .fd-lamp { stop-color: var(--surface); }
+  .dial[data-sig="ready"] .fd-lamp { stop-color: color-mix(in srgb, var(--go) 26%, var(--surface)); }
+  .dial[data-sig="go"] .fd-lamp { stop-color: var(--go); }
+  .dial[data-sig="top"] .fd-lamp, .dial[data-sig="impact"] .fd-lamp { stop-color: var(--flag); }
+  .fd-track { stop-color: var(--track); } .fd-mark { stop-color: var(--surface); }
+  :root[data-forced] .lamp { fill: url(#fdLamp); }
+  :root[data-forced] .ring-track { stroke: url(#fdTrack); }
+  :root[data-forced] .mark:not(.on) { fill: url(#fdMark); }
+  :root[data-forced] .dial:is([data-sig="go"], [data-sig="top"], [data-sig="impact"]) .dial-center :is(.ratio, .ratio-sub, .status, .pend-caps, .cue:not(.on)) {
+    background-image: linear-gradient(currentColor, currentColor); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  :root[data-forced] .dial:is([data-sig="go"], [data-sig="top"], [data-sig="impact"]) :is(.pend-track, .pend-fill, .pend-head) { background-image: linear-gradient(currentColor, currentColor); }
+  /* light parts on the dark dial (the idle pendulum): images are the one paint those browsers leave untouched */
+  :root[data-forced] .dial:is([data-sig="off"], [data-sig="ready"]) :is(.pend-track, .pend-fill, .pend-head) { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect width='1' height='1' fill='%23eaf0eb'/%3E%3C/svg%3E") 0 0 / 100% 100%; }
+  :root[data-forced] .dial:is([data-sig="off"], [data-sig="ready"]) .pend-guide { border-left-color: transparent; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='6'%3E%3Crect width='1' height='3' fill='%23eaf0eb'/%3E%3C/svg%3E") 0 0 / 100% 6px repeat-y; }
+  :root[data-forced] .dial:is([data-sig="off"], [data-sig="ready"]) .pend-guide.imp { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect width='1' height='1' fill='%23eaf0eb'/%3E%3C/svg%3E") 0 0 / 100% 100%; }
+  :root[data-forced] .dial.bar[data-sig] { background-image: linear-gradient(var(--fd-bar, var(--surface)), var(--fd-bar, var(--surface))); }
+  :root[data-forced] .dial.bar[data-sig="ready"] { --fd-bar: color-mix(in srgb, var(--go) 26%, var(--surface)); }
+  :root[data-forced] .dial.bar[data-sig="go"] { --fd-bar: var(--go); }
+  :root[data-forced] .dial.bar:is([data-sig="top"], [data-sig="impact"]) { --fd-bar: var(--flag); }
+  :root[data-forced] body:not(.tab-breathe) :is(.seg button[aria-pressed="true"], .presets button[aria-pressed="true"]) {
+    background-image: linear-gradient(var(--accent-fg), var(--accent-fg)), linear-gradient(180deg, var(--accent-top), var(--accent));
+    -webkit-background-clip: text, border-box; background-clip: text, border-box; -webkit-text-fill-color: transparent;
+  }
 </style>
 </head>
 <body>
@@ -370,6 +426,7 @@
   <div class="dial-wrap" id="dialWrap">
   <button class="dial" id="dial" type="button" data-sig="off">
     <svg viewBox="0 0 280 280" aria-hidden="true">
+      <defs><linearGradient id="fdLamp"><stop class="fd-lamp"></stop></linearGradient><linearGradient id="fdTrack"><stop class="fd-track"></stop></linearGradient><linearGradient id="fdMark"><stop class="fd-mark"></stop></linearGradient></defs>
       <circle class="lamp" cx="140" cy="140" r="104"></circle>
       <circle class="halo" id="halo" cx="140" cy="140" r="104"></circle>
       <circle class="ring-track" cx="140" cy="140" r="120"></circle>
@@ -1232,7 +1289,9 @@
     add(p.gong, GAP0, GONG_START);
     for (let s = 0; s < n; s++) {
       const t = START + s * SET;
-      if (s > 0 && s % 3 === 0) add(p.gong, t, GONG_MID);   // every 3 sets = every minute
+      // every minute: exactly 60 s after the previous gong, 1.5 s before that set's inhale (just like the opening gong),
+      // so it rings in the quiet end of the hold, never on top of the breath
+      if (s > 0 && s % 3 === 0) add(p.gong, t - LEAD, GONG_MID);
       add(p.inh[s % 3], t);
       add(p.exh[s % 3], t + 2 * SIDE);
     }
