@@ -17,6 +17,7 @@ https://creativecommons.org/publicdomain/zero/1.0/legalcode
 Summary:
 https://creativecommons.org/publicdomain/zero/1.0/
 
-Note: the Barlow Condensed and Noto Sans JP typefaces are loaded from Google
-Fonts at runtime and are licensed separately under the SIL Open Font License
-1.1. They are not included in this repository.
+Note: the Barlow Condensed, Noto Sans JP, Cormorant Garamond and Shippori
+Mincho typefaces are loaded from Google Fonts at runtime and are licensed
+separately under the SIL Open Font License 1.1. They are not included in this
+repository.

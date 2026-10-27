@@ -17,7 +17,7 @@
 <title>Golf Stroke Tempo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Cormorant+Garamond:ital,wght@1,500&family=Shippori+Mincho:wght@500&display=swap">
 <style>
   /* Layout: one-screen phone app — dial on top, controls stacked below */
   :root {
@@ -215,6 +215,22 @@
   .stepper button:active { box-shadow: var(--press); }
   .stepper input { background: var(--bg); border-radius: 9px; box-shadow: var(--press); padding: 2px 6px; }
 
+  /* ---------- Stable layout: switching language, mode or putting view never moves anything ---------- */
+  /* Putting bar is exactly as tall as the circle dial */
+  .dial-wrap .dial { display: block; }
+  .dial.bar { height: min(290px, calc(100vw - 32px)); }
+  /* Preset buttons keep one height whether they are circles (5 across) or putting pills (2 across) */
+  .presets { container-type: inline-size; }
+  .presets button, .presets.wide button { aspect-ratio: auto; height: calc((100cqw - 32px) / 5); padding-block: 0; }
+  /* Bluetooth card: hint text runs full width under the title, always two lines tall */
+  .app > .sync { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; row-gap: 4px; align-items: center; padding: 10px 10px 12px 14px; }
+  .app > .sync .sync-text { display: contents; }
+  .app > .sync .sync-text strong { grid-column: 1; grid-row: 1; line-height: 20px; height: 20px; }
+  .app > .sync .stepper { grid-column: 2; grid-row: 1; }
+  .app > .sync .sync-text span { grid-column: 1 / -1; grid-row: 2; line-height: 17px; height: 34px; overflow: hidden; }
+  /* Footer always reserves three lines */
+  .foot { min-height: 4.5em; }
+
   /* Phone or tablet turned sideways: only the timer, as large as the screen allows. Turn back to portrait for settings.
      Kept last so these sizes win over the normal ones. Display only: timing code is unchanged. */
   @media (orientation: landscape) and (pointer: coarse), (orientation: landscape) and (hover: none), (orientation: landscape) and (max-height: 500px) {
@@ -272,10 +288,10 @@
     box-shadow: 10px 12px 26px var(--lo), -8px -8px 20px var(--hi); container-type: inline-size;
   }
   .box-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .bx-track { fill: none; stroke: var(--b-track); stroke-width: 9; }
-  .bx-trail { fill: none; stroke: var(--b-trail); stroke-width: 9; stroke-linecap: round; }
-  .bx-f1 { stop-color: var(--b-fill1); } .bx-f2 { stop-color: var(--b-fill2); }
-  .bx-dot { fill: var(--b-dot); stroke: var(--b-trail); stroke-width: 4; }
+  .bx-track { fill: none; stroke: none; }
+  .bx-glow { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; color: var(--b-trail); }
+  /* The light: a soft bead about the width of the track (no hard ring), with a faint halo */
+  .bx-b1 { stop-color: var(--b-dot); } .bx-b2 { stop-color: var(--b-trail); } .bx-h1 { stop-color: var(--b-trail); stop-opacity: 0.3; } .bx-b9 { stop-opacity: 0.85; } .bx-b0 { stop-opacity: 0; }
   .bx-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; pointer-events: none; padding: 18%; text-align: center; }
   .bx-phase { font-family: var(--font-display); font-weight: 600; font-size: 26px; letter-spacing: 0.06em; text-transform: uppercase; }
   .bx-count { font-family: var(--font-display); font-weight: 700; font-size: 92px; line-height: 0.95; font-variant-numeric: tabular-nums; }
@@ -283,24 +299,45 @@
   .box-wrap[data-ph="idle"] .bx-count, .box-wrap[data-ph="done"] .bx-count { font-size: 64px; }
   .box-wrap[data-ph="done"] .bx-count { display: none; }
   .bx-quote { margin: 0; min-height: 4.8em; display: flex; align-items: center; justify-content: center; text-align: center; text-wrap: balance;
-    font-size: 15px; line-height: 1.6; color: var(--fg); transition: opacity 0.45s ease; }
+    font-size: 15px; line-height: 1.6; color: var(--fg); transition: opacity 0.45s ease; white-space: pre-line; word-break: auto-phrase; }
+  /* Encouragement in a soft literary serif: Cormorant Garamond italic for English, Shippori Mincho for Japanese */
+  .bx-quote:not(.idle) {
+    font-family: "Cormorant Garamond", "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", Georgia, serif;
+    font-style: italic; font-weight: 500; font-size: 21px; line-height: 1.55; letter-spacing: 0.01em;
+    color: color-mix(in srgb, var(--fg) 82%, var(--bg));
+  }
+  :root[lang="ja"] .bx-quote:not(.idle) { font-style: normal; font-size: 17px; line-height: 1.8; letter-spacing: 0.04em; }
   .bx-quote.idle { font-size: 13px; color: var(--muted); }
   .bx-quote.fade { opacity: 0; }
   .box-wrap[data-ph="relax"] .bx-count { display: none; }
   .bx-len { padding: 6px; }
+  .bx-note { display: block; font-size: 11px; font-style: italic; line-height: 16px; height: 16px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 2px; }
+  :root[lang="ja"] .bx-note { font-style: normal; }
   .bx-how { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 16px; background: var(--surface); box-shadow: var(--raise); font-size: 13px; line-height: 1.6; color: var(--fg); }
   .bx-how strong { font-size: 13px; font-weight: 600; }
   .bx-how ol { margin: 0; padding-left: 1.3em; color: var(--muted); display: flex; flex-direction: column; gap: 2px; }
+  .bx-how { min-height: 236px; }
+  /* Quote area has one fixed height for the hint, every quote and both languages */
+  .bx-quote { height: 104px; min-height: 0; overflow: hidden; }
+  /* Inside the box: fixed rows, so the label, number and set line never shift */
+  .box-wrap { --bx-ph: 26px; --bx-ct: 92px; --bx-sb: 12px; }
+  .bx-center { display: grid; grid-template-rows: calc(var(--bx-ph) * 1.4) calc(var(--bx-ct) * 1.04) calc(var(--bx-sb) * 1.9);
+    align-content: center; justify-items: center; align-items: center; gap: 0; padding: 0 12%; }
+  .bx-phase { font-size: var(--bx-ph); line-height: 1; white-space: nowrap; }
+  .bx-count, .box-wrap[data-ph="idle"] .bx-count, .box-wrap[data-ph="done"] .bx-count { font-size: var(--bx-ct); line-height: 1; display: block; }
+  .box-wrap[data-ph="relax"] .bx-count, .box-wrap[data-ph="done"] .bx-count { visibility: hidden; }
+  .box-wrap[data-ph="done"] .bx-phase { font-size: calc(var(--bx-ph) * 0.82); }
+  .bx-sub { font-size: var(--bx-sb); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
   @media (orientation: landscape) and (pointer: coarse), (orientation: landscape) and (hover: none), (orientation: landscape) and (max-height: 500px) {
     body.tab-breathe .app > .dial-wrap { display: none !important; }
     body.tab-breathe .app > .breathe { display: flex !important; flex-direction: row; gap: 4vw; align-items: center; justify-content: center; width: 100%; height: 100%; }
     body.tab-breathe .breathe > :not(.box-wrap):not(.bx-quote) { display: none !important; }
-    body.tab-breathe .bx-quote { flex: 0 1 38vw; min-height: 0; font-size: clamp(16px, 4.4vmin, 28px); }
+    body.tab-breathe .bx-quote { flex: 0 1 38vw; min-height: 0; height: auto; overflow: visible; font-size: clamp(16px, 4.4vmin, 28px); }
+    body.tab-breathe .bx-quote:not(.idle) { font-size: clamp(22px, 6.4vmin, 38px); }
+    :root[lang="ja"] body.tab-breathe .bx-quote:not(.idle) { flex-basis: 46vw; font-size: clamp(16px, 4.6vmin, 26px); }
     body.tab-breathe .box-wrap { width: min(100%, calc(100vh - 20px)); width: min(100%, calc(100dvh - 20px)); margin: 0; }
-    .bx-phase { font-size: clamp(22px, 6vmin, 40px); }
-    .bx-count { font-size: clamp(80px, 26vmin, 190px); }
-    .bx-sub { font-size: clamp(12px, 3vmin, 18px); }
+    .box-wrap { --bx-ph: clamp(22px, 6vmin, 40px); --bx-ct: clamp(80px, 26vmin, 190px); --bx-sb: clamp(12px, 3vmin, 18px); }
   }
 
   @media (prefers-reduced-motion: reduce) { .halo.flash { animation: none; } }
@@ -417,16 +454,16 @@
   <section class="breathe" id="breathe" aria-label="Box breathing">
     <button class="box-wrap" id="bxBox" type="button" data-ph="idle">
       <svg viewBox="0 0 300 300" aria-hidden="true">
+        <path class="bx-track" id="bxPath" d="M47.029 252.971 A24 24 0 0 1 40 236 L40 64 A24 24 0 0 1 64 40 L236 40 A24 24 0 0 1 260 64 L260 236 A24 24 0 0 1 236 260 L64 260 A24 24 0 0 1 47.029 252.971 Z"></path>
+      </svg>
+      <canvas class="bx-glow" id="bxGlow" aria-hidden="true"></canvas>
+      <svg viewBox="0 0 300 300" aria-hidden="true">
         <defs>
-          <clipPath id="bxClip"><rect x="54" y="54" width="192" height="192" rx="16"></rect></clipPath>
-          <linearGradient id="bxFill" x1="0" y1="1" x2="0" y2="0">
-            <stop class="bx-f2" offset="0"></stop><stop class="bx-f1" offset="1"></stop>
-          </linearGradient>
+          <radialGradient id="bxBead"><stop class="bx-b1" offset="0"></stop><stop class="bx-b1" offset="0.38"></stop><stop class="bx-b2 bx-b9" offset="0.72"></stop><stop class="bx-b2 bx-b0" offset="1"></stop></radialGradient>
+          <radialGradient id="bxHalo"><stop class="bx-h1" offset="0"></stop><stop class="bx-h1 bx-b0" offset="1"></stop></radialGradient>
         </defs>
-        <rect id="bxLevel" x="54" y="246" width="192" height="0" fill="url(#bxFill)" clip-path="url(#bxClip)"></rect>
-        <path class="bx-track" id="bxPath" d="M40 236 L40 64 A24 24 0 0 1 64 40 L236 40 A24 24 0 0 1 260 64 L260 236 A24 24 0 0 1 236 260 L64 260 A24 24 0 0 1 40 236 Z"></path>
-        <path class="bx-trail" id="bxTrail" d="M40 236 L40 64 A24 24 0 0 1 64 40 L236 40 A24 24 0 0 1 260 64 L260 236 A24 24 0 0 1 236 260 L64 260 A24 24 0 0 1 40 236 Z"></path>
-        <circle class="bx-dot" id="bxDot" cx="40" cy="236" r="9"></circle>
+        <circle id="bxHaloC" cx="47.03" cy="252.97" r="17" fill="url(#bxHalo)"></circle>
+        <circle class="bx-dot" id="bxDot" cx="47.03" cy="252.97" r="8" fill="url(#bxBead)"></circle>
       </svg>
       <span class="bx-center">
         <span class="bx-phase" id="bxPhase"></span>
@@ -464,6 +501,7 @@
         <button id="bxSoundOn" type="button" data-bsound="on" data-b="on"></button>
         <button id="bxSoundOff" type="button" data-bsound="off" data-b="off"></button>
       </div>
+      <span class="bx-note" data-b="btNote"></span>
     </div>
 
     <div class="bx-how">
@@ -874,7 +912,7 @@
   $('leadInput').addEventListener('change', e => setLead(e.target.value));
   $('leadInput').addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
 
-  window.golfTempo = { stop: () => { if (state.playing) stop(); } }; // lets the Breathe tab stop the golf timer
+  window.golfTempo = { stop: () => { if (state.playing) stop(); }, lead: () => state.lead }; // lets the Breathe tab stop the golf timer and use its Bluetooth delay
   resetDial();
   render();
 })();
@@ -887,18 +925,18 @@
   const SIDE = 5;            // 5-5-5-5: inhale, hold, exhale, hold
   const SET = 4 * SIDE;      // one set = one trip around the box = 20 s
   const LEAD = 1.5;          // the gong, then the first inhale 1.5 s later
-  const AHEAD = 1.5;         // how far ahead sounds are booked on the audio clock
   const LIMITS = { sets: [1, 60], min: [1, 30] };
 
   const TXT = {
     en: {
       tabTempo: 'Tempo', tabBreathe: 'Breathe', title: 'Box breathing', tap: 'Tap to start', tapStop: 'Tap to stop',
       perSide: '5 seconds per side', relax: 'Relax', inhale: 'Inhale', hold: 'Hold', exhale: 'Exhale',
-      done: 'Done', doneSub: 'Tap to go again',
+      done: 'Done', doneSub: 'Tap to go again', preparing: 'Preparing…', pausedSub: 'Paused · Tap to resume',
       mPattern: 'PATTERN', mSets: 'SETS', mLeft: 'TIME LEFT',
       lblLen: 'Length', lblSound: 'Sound', sets: 'Sets', mins: 'Minutes', uSets: 'sets', uMins: 'min', on: 'On', off: 'Off',
       setOf: (r, n) => `Set ${r} of ${n}`,
-      hint: 'In through the nose, out through the nose. A gong sounds at the start, every 5 sets, and at the end.',
+      btNote: 'Bluetooth delay is set on the Tempo tab.',
+      hint: 'In through the nose, out through the nose. A gong sounds at the start, every minute (3 sets), and after the last set.',
       howTitle: 'How to',
       how: ['Sit or stand tall and let your shoulders drop.', 'Inhale through your nose for 5 seconds as the light rises up the left side.', 'Hold for 5 seconds across the top.', 'Exhale slowly through your nose for 5 seconds as the light falls down the right side.', 'Hold for 5 seconds across the bottom, then begin the next set.'],
       doneQuote: 'Carry this calm into whatever comes next.',
@@ -910,7 +948,7 @@
         'This calm is the best version of you.',
         'Don’t force it. Just like practice.',
         'Slow is smooth. Smooth is fast.',
-        'You don’t rise to the level of your goals. You fall to the level of your practice.',
+        'You don’t rise to the level of your goals.\nYou fall to the level of your practice.',
         'A calm mind makes clear choices.',
         'Trust the work you’ve already done.',
         'You’re ready for this.',
@@ -920,11 +958,12 @@
     ja: {
       tabTempo: 'テンポ', tabBreathe: '呼吸', title: 'ボックス呼吸', tap: 'タップしてスタート', tapStop: 'タップで停止',
       perSide: '各5秒', relax: 'リラックス', inhale: '吸って', hold: 'キープ', exhale: '吐いて',
-      done: 'おつかれさまでした', doneSub: 'タップでもう一度',
+      done: 'おつかれさまでした', doneSub: 'タップでもう一度', preparing: '準備中…', pausedSub: '一時停止中・タップで再開',
       mPattern: 'パターン', mSets: 'セット', mLeft: '残り時間',
       lblLen: '長さ', lblSound: 'サウンド', sets: 'セット', mins: '分', uSets: 'セット', uMins: '分', on: 'オン', off: 'オフ',
       setOf: (r, n) => `セット ${r} / ${n}`,
-      hint: '鼻から吸って、鼻から吐きます。ゴングは開始時・5セットごと・終了時に鳴ります。',
+      btNote: 'Bluetooth の音ズレ補正はテンポタブで設定します。',
+      hint: '鼻から吸って、鼻から吐きます。ゴングは開始時・1分（3セット）ごと・最後のセットの後に鳴ります。',
       howTitle: 'やり方',
       how: ['背すじを伸ばし、肩の力を抜きます。', '光が左の辺を上がる間に、鼻から5秒かけて吸います。', '上の辺で5秒キープします。', '光が右の辺を下がる間に、鼻から5秒かけてゆっくり吐きます。', '下の辺で5秒キープし、次のセットへ進みます。'],
       doneQuote: 'この落ち着きのまま、次へ。',
@@ -936,8 +975,8 @@
         'この落ち着きこそ、最高のあなた。',
         '力まずに。いつもの練習のように。',
         'ゆっくりは滑らか。滑らかは速い。',
-        '人は目標のレベルまで上がるのではない。練習のレベルまで落ちるのだ。',
-        '落ち着いた心が、迷いのない判断を生む。',
+        '人は目標のレベルまで上がるのではない。\n練習のレベルまで落ちるのだ。',
+        '落ち着いた心が、\n迷いのない判断を生む。',
         '積み重ねてきたことを信じよう。',
         '準備はできている。',
         '一呼吸ずつ。'
@@ -962,13 +1001,123 @@
   const totalSets = () => (st.mode === 'min' ? st.mins * 3 : st.sets); // 3 sets per minute: always whole sets
 
   /* ---------- geometry ---------- */
-  const box = $('bxBox'), path = $('bxPath'), trail = $('bxTrail'), dot = $('bxDot'), level = $('bxLevel'), quote = $('bxQuote');
+  const box = $('bxBox'), path = $('bxPath'), glow = $('bxGlow'), dot = $('bxDot'), halo = $('bxHaloC'), quote = $('bxQuote');
   const L = path.getTotalLength(), Q = L / 4;
-  const FILL_TOP = 54, FILL_H = 192;
+  const SOFT = 14;      // depth of the fill's soft surface, centred on the light's height
+  let surfaceY = 260;
   const ease = p => 0.5 - 0.5 * Math.cos(Math.PI * p);
-  function setDot(len) { const pt = path.getPointAtLength(((len % L) + L) % L); dot.setAttribute('cx', pt.x.toFixed(2)); dot.setAttribute('cy', pt.y.toFixed(2)); }
-  function setTrail(ph, p) { trail.style.strokeDasharray = `${(p * Q).toFixed(2)} ${L}`; trail.style.strokeDashoffset = `${(-ph * Q).toFixed(2)}`; }
-  function setLevel(x) { const h = x * FILL_H; level.setAttribute('y', (FILL_TOP + FILL_H - h).toFixed(2)); level.setAttribute('height', h.toFixed(2)); }
+  function setDot(len) {
+    const pt = path.getPointAtLength(((len % L) + L) % L);
+    const x = pt.x.toFixed(2), y = pt.y.toFixed(2);
+    dot.setAttribute('cx', x); dot.setAttribute('cy', y); halo.setAttribute('cx', x); halo.setAttribute('cy', y);
+    surfaceY = pt.y;   // the fill's soft surface follows the light's height (painted with the trail)
+  }
+  // Gentle, breath-like motion along each side: the light eases out of a corner, glides along the side and eases into
+  // the next corner. It never stops, its speed is continuous from side to side, and it passes every corner exactly
+  // on the 5-second mark (glide(0) = 0, glide(1) = 1). Speed runs from 0.5x at the corners to 1.5x mid-side.
+  const glide = p => p - 0.5 * Math.sin(2 * Math.PI * p) / (2 * Math.PI);
+  // Where the light is, as distance travelled along the box since the first inhale (t in seconds).
+  const posAt = t => { if (t <= 0) return 0; const k = Math.floor(t / SIDE); return (k + glide((t - k * SIDE) / SIDE)) * Q; };
+
+  /* ---------- the trail ----------
+     The light leaves one continuous trail behind it, all the way back to where it started (or one full lap, 20 s).
+     It fades slowly and evenly with time: brightest at the light, softer and softer behind it, and completely faded
+     at its far end, which it reaches exactly as the light comes around again. So nothing is ever cut off.
+     Drawn as a single stroke with a conic gradient on a canvas (no segments, so no seams). */
+  const LIFE = 4 * SIDE;                                              // one lap
+  const alphaAt = age => age >= LIFE ? 0 : 0.5 + 0.5 * Math.cos(Math.PI * age / LIFE);   // soft at both ends
+  const gctx = glow.getContext('2d'), ring = new Path2D(path.getAttribute('d'));
+  let angTab = null, rgb = null, rgbAt = 0;
+  function angleAt(P) {   // clockwise angle around the box centre, unwrapped (one lap = 2π)
+    if (!angTab) {
+      angTab = new Float64Array(513); let prev = 0, acc = 0;
+      for (let i = 0; i <= 512; i++) {
+        const pt = path.getPointAtLength(Math.min(L - 1e-3, i * L / 512)), an = Math.atan2(pt.y - 150, pt.x - 150);
+        if (i) { let d = an - prev; d -= 2 * Math.PI * Math.round(d / (2 * Math.PI)); acc += d; } else acc = an;
+        prev = an; angTab[i] = acc;
+      }
+    }
+    const lap = Math.floor(P / L), x = (P - lap * L) / L * 512, i = Math.min(511, Math.floor(x));
+    return angTab[i] + (angTab[i + 1] - angTab[i]) * (x - i) + lap * 2 * Math.PI;
+  }
+  let theme = { f1: '#e6eef3', f2: '#c3d5e1', tr: '#dde6ec' }, layerKey = '';
+  const panelC = document.createElement('canvas'), trackC = document.createElement('canvas');
+  function trailRGB() {
+    const now = performance.now();
+    if (!rgb || now - rgbAt > 500) {
+      rgbAt = now; const cs = getComputedStyle(glow), m = cs.color.match(/[\d.]+/g); rgb = m ? m.slice(0, 3).join(',') : '142,170,189';
+      const v = n => cs.getPropertyValue(n).trim();
+      theme = { f1: v('--b-fill1') || theme.f1, f2: v('--b-fill2') || theme.f2, tr: v('--b-track') || theme.tr };
+    }
+    return rgb;
+  }
+  // Soft shapes are drawn as blurred shadows (supported everywhere), then coloured: no hard edges anywhere.
+  function softShape(cv, px, blur, drawShape, paint) {
+    const c = cv.getContext('2d'), k = px / 300; cv.width = px; cv.height = px;
+    c.save(); c.shadowColor = '#000'; c.shadowBlur = blur * k; c.shadowOffsetX = px * 2;
+    c.setTransform(k, 0, 0, k, -px * 2, 0); drawShape(c); c.restore();
+    c.globalCompositeOperation = 'source-in'; c.setTransform(k, 0, 0, k, 0, 0); paint(c); c.globalCompositeOperation = 'source-over';
+  }
+  function softLayers(px) {
+    const key = [px, theme.f1, theme.f2, theme.tr].join('|');
+    if (key === layerKey) return; layerKey = key;
+    // the inner panel that fills with the breath: soft-edged, light at the top and deeper below
+    softShape(panelC, px, 7, c => { c.beginPath(); c.moveTo(70, 54); c.arcTo(246, 54, 246, 246, 16); c.arcTo(246, 246, 54, 246, 16); c.arcTo(54, 246, 54, 54, 16); c.arcTo(54, 54, 246, 54, 16); c.closePath(); c.fill(); },
+      c => { const g = c.createLinearGradient(0, 54, 0, 246); g.addColorStop(0, theme.f1); g.addColorStop(1, theme.f2); c.fillStyle = g; c.fillRect(0, 0, 300, 300); });
+    // the track the light travels on, with softened edges
+    softShape(trackC, px, 2.5, c => { c.lineWidth = 9; c.stroke(ring); }, c => { c.fillStyle = theme.tr; c.fillRect(0, 0, 300, 300); });
+  }
+  // The fill: the soft panel, faded out above the light's height through a smooth band (no waterline).
+  function paintBase(px) {
+    softLayers(px);
+    gctx.setTransform(1, 0, 0, 1, 0, 0); gctx.drawImage(panelC, 0, 0);
+    gctx.setTransform(px / 300, 0, 0, px / 300, 0, 0);
+    const g = gctx.createLinearGradient(0, surfaceY - SOFT / 2, 0, surfaceY + SOFT / 2);
+    [1, 0.84, 0.5, 0.16, 0].forEach((a, i) => g.addColorStop(i / 4, `rgba(0,0,0,${a})`));   // smooth (eased) edge
+    gctx.globalCompositeOperation = 'destination-out'; gctx.fillStyle = g; gctx.fillRect(0, 0, 300, 300);
+    gctx.globalCompositeOperation = 'source-over';
+    gctx.setTransform(1, 0, 0, 1, 0, 0); gctx.drawImage(trackC, 0, 0);
+  }
+  // now: seconds since the first inhale; end: when the light stopped (Infinity while it is moving); mult: overall strength
+  function drawTrail(now, end = Infinity, mult = 1) {
+    const dpr = Math.min(3, window.devicePixelRatio || 1), px = Math.max(1, Math.round(glow.clientWidth * dpr));
+    if (glow.width !== px) { glow.width = px; glow.height = px; }
+    gctx.setTransform(1, 0, 0, 1, 0, 0); gctx.clearRect(0, 0, px, px);
+    trailRGB(); paintBase(px);
+    if (!(now > 0) || mult <= 0.001) return;
+    const span = Math.min(now, LIFE), t0 = now - span;
+    const tail = posAt(Math.min(t0, end)), head = posAt(Math.min(now, end));
+    if (head - tail < 0.05) return;
+    const a0 = angleAt(tail), a1 = angleAt(head), c = trailRGB(), len = head - tail;
+    gctx.setTransform(px / 300, 0, 0, px / 300, 0, 0); gctx.lineCap = 'round';
+    // Until the trail is a full lap it has a start: stroke only the travelled part, with a rounded start.
+    if (len < L - 0.01) { gctx.setLineDash([len, L - len]); gctx.lineDashOffset = -(((tail % L) + L) % L); } else gctx.setLineDash([]);
+    const n = 60;
+    if (gctx.createConicGradient) {
+      // The gradient starts a little before the trail, so the rounded start takes the start's colour.
+      const pre = Math.min(0.05, Math.max(0, (2 * Math.PI - (a1 - a0)) / 2)), base = a0 - pre;
+      const g = gctx.createConicGradient(base, 150, 150), col = a => `rgba(${c},${(a * mult).toFixed(4)})`;
+      g.addColorStop(0, col(alphaAt(now - t0)));
+      for (let i = 0; i <= n; i++) {
+        const t = t0 + span * i / n, off = (angleAt(posAt(Math.min(t, end))) - base) / (2 * Math.PI);
+        g.addColorStop(Math.max(0, Math.min(1, off)), col(alphaAt(now - t)));
+      }
+      gctx.strokeStyle = g;
+      // faint, wider passes first: the trail's edges melt softly into the track
+      for (const [w, a] of [[21, 0.05], [16, 0.08], [12, 0.13]]) { gctx.globalAlpha = a; gctx.lineWidth = w; gctx.stroke(ring); }
+      gctx.globalAlpha = 1; gctx.lineWidth = 9; gctx.stroke(ring);
+      gctx.setLineDash([]);
+    } else {   // older browsers: the same trail in short pieces
+      gctx.lineCap = 'butt'; gctx.lineWidth = 9;
+      for (let i = 0; i < n; i++) {
+        const ta = t0 + span * i / n, tb = t0 + span * (i + 1) / n, pa = posAt(Math.min(ta, end)), pb = posAt(Math.min(tb, end));
+        if (pb - pa < 0.01) continue;
+        gctx.setLineDash([pb - pa, L - (pb - pa)]); gctx.lineDashOffset = -(pa % L);
+        gctx.strokeStyle = `rgba(${c},${(alphaAt(now - (ta + tb) / 2) * mult).toFixed(4)})`; gctx.stroke(ring);
+      }
+      gctx.setLineDash([]);
+    }
+  }
   const lastTxt = {};
   function txt(id, v) { if (lastTxt[id] !== v) { lastTxt[id] = v; $(id).textContent = v; } }
 
@@ -1024,105 +1173,238 @@
     return nodes;
   }
 
-  /* ---------- audio engine ---------- */
-  let ctx = null, comp = null, master = null, noise = null, sched = null, raf = 0, wake = null;
-  let running = false, finished = false, N = 0, start = 0, nextK = 0, endNodes = null, lastSet = -1, quoteIdx = 0;
-  const phaseNodes = new Map();
-  const BREATH_GAIN = 2.2, GONG_START = 0.5, GONG_MID = 0.38, GONG_END = 0.5;
+  /* ---------- audio: the whole session is pre-built as one track and played as media ----------
+     A media track needs no timers, so it keeps playing with the screen locked (Android; iPhone in Safari),
+     plays even with the iPhone silent switch on, and shows play / pause on the lock screen.
+     Every sound sits at an exact sample position in the track, and the lights follow the track's own clock. */
+  const SR = 22050, OUT_SR = 11025;   // render at 22.05 kHz, store at 11.025 kHz (breath and gong live below 5 kHz)
+  const GAP0 = 0.05;                  // tiny lead-in before the opening gong
+  const START = GAP0 + LEAD;          // the first inhale, in track seconds
+  const TAIL = 9;                     // closing gong ring-out
+  const BREATH_GAIN = 2.2, MASTER = 0.9, GONG_START = 0.5, GONG_MID = 0.38, GONG_END = 0.5;
 
-  function ensureCtx() {
+  const player = new Audio(); player.preload = 'auto'; player.setAttribute('playsinline', '');
+  let partsPromise = null, ready = null, prepToken = 0, swapToken = 0, raf = 0, wake = null;
+  let running = false, finished = false, paused = false, stopping = false, swapping = false;
+  let N = 0, lastSet = -1, quoteIdx = 0, anchorCT = 0, anchorPerf = 0;
+
+  function wavBlob(x) {
+    const n = x.length, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+    const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+    w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true);
+    v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, OUT_SR, true); v.setUint32(28, OUT_SR * 2, true);
+    v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
+    const pcm = new Int16Array(buf, 44, n);
+    for (let i = 0; i < n; i++) { const s = x[i] > 1 ? 1 : x[i] < -1 ? -1 : x[i]; pcm[i] = s < 0 ? s * 0x8000 : s * 0x7fff; }
+    return new Blob([buf], { type: 'audio/wav' });
+  }
+  const SILENT = URL.createObjectURL(wavBlob(new Float32Array(1100)));
+
+  async function renderPart(fn, dur) {
+    const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    const ac = new OAC(1, Math.ceil(SR * dur), SR);
+    const len = SR * 4, buf = ac.createBuffer(1, len, SR), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    const bus = ac.createGain(); bus.connect(ac.destination); fn(ac, bus, buf);
+    const x = (await ac.startRendering()).getChannelData(0);
+    const y = new Float32Array(Math.floor(x.length / 2));
+    for (let i = 0; i < y.length; i++) y[i] = 0.5 * (x[2 * i] + x[2 * i + 1]);
+    return y;
+  }
+  // Three variations of each breath, so the session never sounds looped
+  function loadParts() {
+    if (!partsPromise) partsPromise = (async () => {
+      const inh = [], exh = [];
+      for (let v = 0; v < 3; v++) {
+        inh.push(await renderPart((ac, bus, buf) => { bus.gain.value = BREATH_GAIN * MASTER; breathVoice(ac, bus, buf, 0, SIDE, true); }, SIDE));
+        exh.push(await renderPart((ac, bus, buf) => { bus.gain.value = BREATH_GAIN * MASTER; breathVoice(ac, bus, buf, 0, SIDE, false); }, SIDE));
+      }
+      const gong = await renderPart((ac, bus, buf) => { bus.gain.value = MASTER; gongVoice(ac, bus, buf, 0, 1); }, TAIL + 0.5);
+      return { inh, exh, gong };
+    })();
+    return partsPromise;
+  }
+  // Session track: opening gong, then every set (a gong every 3 sets = every minute), then the closing gong after the final hold
+  async function buildTrack(n) {
+    const p = await loadParts();
+    const total = Math.ceil((START + n * SET + TAIL) * OUT_SR), mix = new Float32Array(total);
+    const add = (src, t, g = 1) => { const o = Math.round(t * OUT_SR), len = Math.min(src.length, total - o); for (let i = 0; i < len; i++) mix[o + i] += src[i] * g; };
+    add(p.gong, GAP0, GONG_START);
+    for (let s = 0; s < n; s++) {
+      const t = START + s * SET;
+      if (s > 0 && s % 3 === 0) add(p.gong, t, GONG_MID);   // every 3 sets = every minute
+      add(p.inh[s % 3], t);
+      add(p.exh[s % 3], t + 2 * SIDE);
+    }
+    add(p.gong, START + n * SET, GONG_END);
+    return wavBlob(mix);
+  }
+  async function prepare() {
+    const n = totalSets();
+    if (ready && ready.n === n) return ready;
+    const token = ++prepToken, blob = await buildTrack(n);
+    if (token !== prepToken) return ready && ready.n === n ? ready : null;
+    if (ready && ready.url !== player.src) URL.revokeObjectURL(ready.url);
+    ready = { n, blob, url: URL.createObjectURL(blob) };
+    return ready;
+  }
+  let prepTimer = 0;
+  const prepareSoon = () => { clearTimeout(prepTimer); prepTimer = setTimeout(() => { prepare().catch(() => {}); }, 250); };
+
+  /* Fallback: some viewers refuse to play a page-made track as media (strict content policies).
+     Then the very same track plays through Web Audio: same sounds, same sample positions, same timing.
+     Only screen-off playback is lost in that case. */
+  let useWA = false, ctx = null, waGain = null, waSrc = null, waT0 = 0;
+  function waEnsure() {
     if (!ctx) {
       const AC = window.AudioContext || window.webkitAudioContext;
       ctx = new AC({ latencyHint: 'interactive' });
-      comp = ctx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 3; comp.connect(ctx.destination);
+      waGain = ctx.createGain(); waGain.connect(ctx.destination);
       const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.start(0); // iOS unlock
-      const len = ctx.sampleRate * 4; noise = ctx.createBuffer(1, len, ctx.sampleRate);
-      const d = noise.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
     }
     return ctx.state === 'running' ? Promise.resolve() : ctx.resume().catch(() => {});
   }
-  function audibleNow() {
+  function waNow() {
     if (ctx.getOutputTimestamp) {
       const ts = ctx.getOutputTimestamp();
       if (ts && ts.contextTime > 0 && ts.performanceTime > 0) return ts.contextTime + (performance.now() - ts.performanceTime) / 1000;
     }
     return ctx.currentTime - (ctx.outputLatency || 0) - (ctx.baseLatency || 0);
   }
-  const stopNodes = list => (list || []).forEach(n => { try { n.stop(); } catch {} });
-
-  // Every phase is booked ahead on the audio clock, so the pace never drifts.
-  // The session always ends after a complete set: the final bottom hold, then the closing gong.
-  function schedule() {
-    const horizon = ctx.currentTime + AHEAD;
-    for (;;) {
-      if (nextK >= 4 * N) {
-        const at = start + N * SET;
-        if (!endNodes && at <= horizon) endNodes = gongVoice(ctx, master, noise, at, GONG_END);
-        break;
-      }
-      const at = start + nextK * SIDE;
-      if (at > horizon) break;
-      const ph = nextK % 4, set = Math.floor(nextK / 4), nodes = [];
-      if (ph === 0 && set > 0 && set % 5 === 0) nodes.push(...gongVoice(ctx, master, noise, at, GONG_MID)); // after every 5 sets
-      if (ph === 0) nodes.push(...breathVoice(ctx, breathBus, noise, at, SIDE, true));
-      if (ph === 2) nodes.push(...breathVoice(ctx, breathBus, noise, at, SIDE, false));
-      phaseNodes.set(nextK, nodes);
-      phaseNodes.delete(nextK - 12);
-      nextK++;
-    }
+  // Start the track at its beginning, or switch to a new track at the exact current position (seamless)
+  async function waPlay(rd, keepPosition) {
+    await waEnsure();
+    const buf = await ctx.decodeAudioData(await rd.blob.arrayBuffer());
+    const at = ctx.currentTime + 0.06, offset = keepPosition ? Math.max(0, at - waT0) : 0;
+    const src = ctx.createBufferSource(); src.buffer = buf; src.connect(waGain);
+    src.start(at, offset);
+    if (waSrc) { try { waSrc.stop(at); } catch {} }
+    waSrc = src; waT0 = at - offset;
   }
-  let breathBus = null;
+  function waStop() { if (waSrc) { try { waSrc.stop(); } catch {} waSrc = null; } }
+  // Media must actually advance; some viewers accept play() but never deliver sound
+  function progressing() {
+    return new Promise(res => {
+      const t0 = player.currentTime, s = performance.now();
+      (function chk() { if (player.currentTime > t0 + 0.05) return res(true); if (performance.now() - s > 1200) return res(false); setTimeout(chk, 40); })();
+    });
+  }
 
-  // Change the length during a session: the current set always finishes
-  function setTotal(newN) {
-    if (!running || !ctx || !master) return;
-    const kNow = Math.max(0, Math.floor((audibleNow() - start) / SIDE));
-    newN = Math.max(newN, Math.floor(kNow / 4) + 1);
+  // Seconds into the track as heard: a smooth clock re-anchored to the player whenever they drift apart
+  function trackTime() {
+    if (useWA) return ctx && waSrc ? waNow() - waT0 : 0;
+    const now = performance.now();
+    if (swapping) return anchorCT + (now - anchorPerf) / 1000;
+    const ct = player.currentTime;
+    if (player.paused) { anchorCT = ct; anchorPerf = now; return ct; }
+    const est = anchorCT + (now - anchorPerf) / 1000;
+    if (Math.abs(ct - est) > 0.04) { anchorCT = ct; anchorPerf = now; return ct; }
+    return est;
+  }
+  // Bluetooth delay is the value set on the Tempo tab
+  const leadS = () => (window.golfTempo?.lead?.() || 0) / 1000;
+
+  // Change the length during a session: the current set always finishes, then the track is swapped in place
+  async function setTotal(newN) {
+    if (!running) return;
+    const cur = Math.max(0, Math.floor((trackTime() - START) / SET)) + 1;
+    newN = Math.max(newN, cur);
     if (newN === N) return;
-    if (endNodes) { stopNodes(endNodes); endNodes = null; }
-    if (4 * newN < nextK) {
-      for (let k = 4 * newN; k < nextK; k++) { stopNodes(phaseNodes.get(k)); phaseNodes.delete(k); }
-      nextK = 4 * newN;
-    }
-    N = newN; schedule();
+    N = newN;
+    const token = ++swapToken, blob = await buildTrack(newN);
+    if (token !== swapToken || !running) return;
+    if (useWA) { try { await waPlay({ n: newN, blob }, true); } catch {} return; }
+    const url = URL.createObjectURL(blob), old = player.src, wasPlaying = !player.paused;
+    anchorCT = trackTime(); anchorPerf = performance.now(); swapping = true;
+    player.src = url;
+    player.addEventListener('loadedmetadata', () => {
+      player.currentTime = anchorCT + (performance.now() - anchorPerf) / 1000;
+      const done = () => { swapping = false; anchorCT = player.currentTime; anchorPerf = performance.now(); };
+      if (wasPlaying) player.play().then(done, done); else done();
+      if (old.startsWith('blob:') && (!ready || old !== ready.url)) URL.revokeObjectURL(old);
+    }, { once: true });
+  }
+
+  function mediaSession(on) {
+    if (!('mediaSession' in navigator)) return;
+    try {
+      if (on) {
+        const icon = document.querySelector('link[rel="apple-touch-icon"]')?.href;
+        navigator.mediaSession.metadata = new MediaMetadata({ title: tt('title'), artist: 'Golf Stroke Tempo', artwork: icon ? [{ src: icon, sizes: '180x180', type: 'image/png' }] : [] });
+        navigator.mediaSession.setActionHandler('play', () => { player.play().catch(() => {}); });
+        navigator.mediaSession.setActionHandler('pause', () => { player.pause(); });
+        navigator.mediaSession.setActionHandler('stop', () => { if (running) stopB(false); });
+      }
+      navigator.mediaSession.playbackState = on ? 'playing' : 'none';
+    } catch {}
   }
 
   async function startB() {
-    const ready = ensureCtx(); // inside the tap, as phones require
-    running = true; finished = false; renderIdle();
-    await ready;
-    if (!running) return;
-    N = totalSets();
-    master = ctx.createGain(); master.gain.value = st.sound === 'on' ? 0.9 : 0; master.connect(comp);
-    breathBus = ctx.createGain(); breathBus.gain.value = BREATH_GAIN; breathBus.connect(master);
-    const t0 = ctx.currentTime + 0.12;
-    start = t0 + LEAD; nextK = 0; endNodes = null; phaseNodes.clear(); lastSet = -1;
-    gongVoice(ctx, master, noise, t0, GONG_START);
+    cancelAnimationFrame(fadeRaf);
+    running = true; finished = false; paused = false; renderIdle();
+    const waReady = waEnsure();   // unlock Web Audio inside the tap too, in case media playback is refused
+    const want = totalSets();
+    let rd = ready && ready.n === want ? ready : null;
+    if (!useWA && rd) { player.src = rd.url; player.muted = st.sound === 'off'; }
+    const firstPlay = !useWA && rd ? player.play() : null;   // must start inside the tap on phones
+    if (!rd) {
+      if (!useWA) { player.src = SILENT; player.play().catch(() => {}); }
+      txt('bxSub', tt('preparing'));
+      try { rd = await prepare(); } catch { rd = null; }
+      if (!running) return;
+      if (!rd) { running = false; renderIdle(); return; }
+    }
+    N = rd.n;
+    if (waGain) waGain.gain.value = st.sound === 'off' ? 0 : 1;
+    if (!useWA) {
+      let ok = false;
+      try {
+        if (!firstPlay) { player.src = rd.url; player.muted = st.sound === 'off'; await player.play(); } else await firstPlay;
+        ok = await progressing();
+      } catch { ok = false; }
+      if (!running) return;
+      if (!ok) { stopping = true; try { player.pause(); } catch {} stopping = false; useWA = true; }
+    }
+    if (useWA) {
+      paused = false;
+      try { await waReady; await waPlay(rd, false); } catch { running = false; renderIdle(); return; }
+      if (!running) { waStop(); return; }
+    }
+    anchorCT = useWA ? 0 : player.currentTime; anchorPerf = performance.now(); lastSet = -1;
     showQuote(nextQuote(), false);
-    schedule(); sched = setInterval(schedule, 50);
+    mediaSession(!useWA);
     cancelAnimationFrame(raf); raf = requestAnimationFrame(draw);
     keepAwake();
   }
 
+  let fadeRaf = 0, fading = false;
+  const FINAL = 8;   // seconds: after the last set the trail fades out completely, with the closing gong
+  function fadeLast() {
+    const t0 = performance.now(), end = 4 * N * SIDE;
+    fading = true;
+    const step = () => {
+      if (running || !finished) { fading = false; return; }
+      const w = (performance.now() - t0) / 1000;
+      drawTrail(end + w, end, w < FINAL ? 0.5 + 0.5 * Math.cos(Math.PI * w / FINAL) : 0);
+      if (w < FINAL) fadeRaf = requestAnimationFrame(step); else fading = false;
+    };
+    step();
+  }
+  // Repaint the box whenever its size changes (tab shown, phone turned) while nothing is animating it.
+  if ('ResizeObserver' in window) new ResizeObserver(() => { if (!running && !fading) drawTrail(0); }).observe(glow);
   function stopB(done) {
-    running = false; finished = !!done;
-    clearInterval(sched); sched = null; cancelAnimationFrame(raf);
-    if (master && ctx) {
-      const m = master, now = ctx.currentTime, all = [...phaseNodes.values()].flat();
-      master = null; breathBus = null; phaseNodes.clear();
-      if (done) {
-        setTimeout(() => { try { m.disconnect(); } catch {} }, 9500); // let the closing gong ring out
-      } else {
-        m.gain.cancelScheduledValues(now); m.gain.setValueAtTime(m.gain.value, now); m.gain.linearRampToValueAtTime(0.0001, now + 0.25);
-        const ends = endNodes || [];
-        setTimeout(() => { stopNodes(all); stopNodes(ends); try { m.disconnect(); } catch {} }, 320);
-      }
-      endNodes = null;
-    }
+    running = false; finished = !!done; paused = false; swapToken++;
+    cancelAnimationFrame(raf); cancelAnimationFrame(fadeRaf); fading = false;
+    if (!done) { if (useWA) waStop(); else { stopping = true; player.pause(); stopping = false; } }   // when done, the closing gong rings out
+    mediaSession(false);
     const w = wake; wake = null; try { w?.release(); } catch {}
     renderIdle();
+    if (done) fadeLast();
     showQuote(done ? tt('doneQuote') : tt('hint'), !done);
   }
+
+  player.addEventListener('pause', () => { if (running && !stopping && !swapping && !useWA) { paused = true; try { navigator.mediaSession.playbackState = 'paused'; } catch {} } });
+  player.addEventListener('play', () => { if (running && !useWA) { paused = false; try { navigator.mediaSession.playbackState = 'playing'; } catch {} } });
 
   async function keepAwake() {
     if (!running || document.hidden || !('wakeLock' in navigator)) return;
@@ -1151,11 +1433,12 @@
 
   function draw() {
     if (!running) return;
-    const e = audibleNow() - start;
+    const e = trackTime() - leadS() - START;
+    if (paused) { txt('bxSub', tt('pausedSub')); raf = requestAnimationFrame(draw); return; }
     if (e < 0) {
       box.dataset.ph = 'relax';
       txt('bxPhase', tt('relax')); txt('bxCount', ''); txt('bxSub', tt('tapStop'));
-      setDot(0); setTrail(0, 0); setLevel(0);
+      setDot(0); drawTrail(0);
       txt('bxRounds', `0 / ${N}`); txt('bxTime', fmtTime(N * SET));
     } else {
       const k = Math.floor(e / SIDE);
@@ -1166,8 +1449,8 @@
       txt('bxPhase', tt(name));
       txt('bxCount', String(Math.max(1, Math.ceil(SIDE - within - 1e-6))));
       txt('bxSub', tt('setOf')(set + 1, N));
-      setDot((ph + p) * Q); setTrail(ph, p);
-      setLevel(ph === 0 ? ease(p) : ph === 1 ? 1 : ph === 2 ? 1 - ease(p) : 0);
+      const g = glide(p);
+      setDot((ph + g) * Q); drawTrail(e);
       txt('bxRounds', `${set} / ${N}`);
       txt('bxTime', fmtTime(N * SET - e));
       if (set !== lastSet) {
@@ -1182,7 +1465,7 @@
   function renderIdle() {
     if (running) return;
     box.dataset.ph = finished ? 'done' : 'idle';
-    setDot(0); setTrail(0, 0); setLevel(0);
+    setDot(0); drawTrail(0);
     if (finished) { txt('bxPhase', tt('done')); txt('bxCount', ''); txt('bxSub', tt('doneSub')); }
     else { txt('bxPhase', tt('title')); txt('bxCount', String(SIDE)); txt('bxSub', `${tt('perSide')} · ${tt('tap')}`); }
     const n = totalSets();
@@ -1217,7 +1500,7 @@
 
   function applyLength() {
     save(); renderLen();
-    if (running) setTotal(totalSets()); else { finished = false; renderIdle(); }
+    if (running) setTotal(totalSets()); else { finished = false; renderIdle(); prepareSoon(); }
   }
   function setValue(v) {
     const key = st.mode === 'min' ? 'mins' : 'sets';
@@ -1226,7 +1509,7 @@
   }
 
   /* ---------- events ---------- */
-  box.addEventListener('click', () => running ? stopB(false) : startB());
+  box.addEventListener('click', () => { if (!running) startB(); else if (paused) player.play().catch(() => {}); else stopB(false); });
   document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
   document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => render()));
   document.querySelectorAll('[data-bmode]').forEach(b => b.addEventListener('click', () => { st.mode = b.dataset.bmode; applyLength(); }));
@@ -1236,16 +1519,18 @@
   $('bxInput').addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
   document.querySelectorAll('[data-bsound]').forEach(b => b.addEventListener('click', () => {
     st.sound = b.dataset.bsound; save(); render();
-    if (master && ctx) { const now = ctx.currentTime; master.gain.cancelScheduledValues(now); master.gain.setValueAtTime(master.gain.value, now); master.gain.linearRampToValueAtTime(st.sound === 'on' ? 0.9 : 0.0001, now + 0.15); }
+    player.muted = st.sound === 'off';
+    if (waGain) waGain.gain.value = st.sound === 'off' ? 0 : 1;
   }));
   // On the Breathe tab, the space bar controls breathing instead of the golf timer
   window.addEventListener('keydown', e => {
     if (st.tab !== 'breathe' || e.code !== 'Space' || e.target !== document.body) return;
-    e.preventDefault(); e.stopPropagation(); running ? stopB(false) : startB();
+    e.preventDefault(); e.stopPropagation(); if (!running) startB(); else if (paused) player.play().catch(() => {}); else stopB(false);
   }, true);
-  document.addEventListener('visibilitychange', () => { if (document.hidden && running) stopB(false); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && running) keepAwake(); });
 
   render();
+  setTimeout(() => { prepare().catch(() => {}); }, 800);   // pre-build the default session so the first tap starts instantly
 })();
 </script>
 <script>
