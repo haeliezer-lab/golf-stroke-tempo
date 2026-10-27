@@ -110,10 +110,13 @@
   .seg-back, .ring-prog.back { stroke: var(--go); }
   .seg-down, .ring-prog.down { stroke: var(--flag); }
   .ring-prog { fill: none; stroke-width: 14; }
-  .lamp { fill: var(--surface); }
-  .dial[data-sig="ready"] .lamp { fill: color-mix(in srgb, var(--go) 26%, var(--surface)); }
-  .dial[data-sig="go"] .lamp { fill: var(--go); }
-  .dial[data-sig="top"] .lamp, .dial[data-sig="impact"] .lamp { fill: var(--flag); }
+  /* The lamp (centre of the circle) is a page element rather than an SVG shape, so browsers that recolour pages in their
+     own dark mode recolour it together with the text on it. Same size and colours as before: r 104 of 280. */
+  .lamp { position: absolute; left: 12.857%; top: 12.857%; width: 74.286%; height: 74.286%; border-radius: 50%; pointer-events: none; background: var(--surface); }
+  .dial.bar .lamp { display: none; }
+  .dial[data-sig="ready"] .lamp { background: color-mix(in srgb, var(--go) 26%, var(--surface)); }
+  .dial[data-sig="go"] .lamp { background: var(--go); }
+  .dial[data-sig="top"] .lamp, .dial[data-sig="impact"] .lamp { background: var(--flag); }
   .dial[data-sig="ready"] .dial-center { color: var(--fg); }
   .dial[data-sig="go"] .dial-center { color: var(--on-go); }
   .dial[data-sig="top"] .dial-center, .dial[data-sig="impact"] .dial-center { color: var(--on-flag); }
@@ -316,6 +319,28 @@
   .box-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
   .bx-track { fill: none; stroke: none; }
   .bx-glow { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; color: var(--b-trail); }
+  /* The panel that fills with the breath, and the track, are plain page elements (not drawn on the canvas), so browsers
+     that recolour pages in their own dark mode (Samsung Internet) recolour them together with the text. Sizes are in
+     box units: 300 units = 100cqw. */
+  .bx-panel {
+    position: absolute; left: 16.833cqw; top: 16.833cqw; width: 66.333cqw; height: 66.333cqw; border-radius: 6.5cqw; pointer-events: none;
+    background: linear-gradient(var(--b-fill1), var(--b-fill2));
+    --e: 2.333cqw;    /* soft edges, 7 units */
+    --lvl: 100cqw;    /* the soft surface (set from the light's height); 100cqw = empty */
+    -webkit-mask-image:
+      linear-gradient(to bottom, transparent calc(var(--lvl) - var(--e)), rgba(0,0,0,.16) calc(var(--lvl) - var(--e) / 2), rgba(0,0,0,.5) var(--lvl), rgba(0,0,0,.84) calc(var(--lvl) + var(--e) / 2), #000 calc(var(--lvl) + var(--e))),
+      linear-gradient(to right, transparent, #000 var(--e), #000 calc(100% - var(--e)), transparent),
+      linear-gradient(to bottom, transparent, #000 var(--e), #000 calc(100% - var(--e)), transparent);
+    mask-image:
+      linear-gradient(to bottom, transparent calc(var(--lvl) - var(--e)), rgba(0,0,0,.16) calc(var(--lvl) - var(--e) / 2), rgba(0,0,0,.5) var(--lvl), rgba(0,0,0,.84) calc(var(--lvl) + var(--e) / 2), #000 calc(var(--lvl) + var(--e))),
+      linear-gradient(to right, transparent, #000 var(--e), #000 calc(100% - var(--e)), transparent),
+      linear-gradient(to bottom, transparent, #000 var(--e), #000 calc(100% - var(--e)), transparent);
+    -webkit-mask-composite: source-in; mask-composite: intersect;
+  }
+  .bx-ring {
+    position: absolute; left: 11.833cqw; top: 11.833cqw; width: 76.333cqw; height: 76.333cqw; box-sizing: border-box; pointer-events: none;
+    border: 3cqw solid var(--b-track); border-radius: 9.5cqw; filter: blur(0.4cqw);
+  }
   /* The light: a soft bead about the width of the track (no hard ring), with a faint halo */
   .bx-b1 { stop-color: var(--b-dot); } .bx-b2 { stop-color: var(--b-trail); } .bx-h1 { stop-color: var(--b-trail); stop-opacity: 0.3; } .bx-b9 { stop-opacity: 0.85; } .bx-b0 { stop-opacity: 0; }
   .bx-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; pointer-events: none; padding: 18%; text-align: center; }
@@ -373,12 +398,7 @@
      SVG shapes light, and darken light backgrounds. Gradients with dark or vivid colours are left as they are, so the
      dial's shapes, and dark text sitting on the bright green and yellow lights, are painted with gradients here.
      Colours and timing are exactly the same as the normal dark theme. */
-  .fd-lamp { stop-color: var(--surface); }
-  .dial[data-sig="ready"] .fd-lamp { stop-color: color-mix(in srgb, var(--go) 26%, var(--surface)); }
-  .dial[data-sig="go"] .fd-lamp { stop-color: var(--go); }
-  .dial[data-sig="top"] .fd-lamp, .dial[data-sig="impact"] .fd-lamp { stop-color: var(--flag); }
   .fd-track { stop-color: var(--track); } .fd-mark { stop-color: var(--surface); }
-  :root[data-forced] .lamp { fill: url(#fdLamp); }
   :root[data-forced] .ring-track { stroke: url(#fdTrack); }
   :root[data-forced] .mark:not(.on) { fill: url(#fdMark); }
   :root[data-forced] .dial:is([data-sig="go"], [data-sig="top"], [data-sig="impact"]) .dial-center :is(.ratio, .ratio-sub, .status, .pend-caps, .cue:not(.on)) {
@@ -425,9 +445,9 @@
 
   <div class="dial-wrap" id="dialWrap">
   <button class="dial" id="dial" type="button" data-sig="off">
+    <span class="lamp" aria-hidden="true"></span>
     <svg viewBox="0 0 280 280" aria-hidden="true">
-      <defs><linearGradient id="fdLamp"><stop class="fd-lamp"></stop></linearGradient><linearGradient id="fdTrack"><stop class="fd-track"></stop></linearGradient><linearGradient id="fdMark"><stop class="fd-mark"></stop></linearGradient></defs>
-      <circle class="lamp" cx="140" cy="140" r="104"></circle>
+      <defs><linearGradient id="fdTrack"><stop class="fd-track"></stop></linearGradient><linearGradient id="fdMark"><stop class="fd-mark"></stop></linearGradient></defs>
       <circle class="halo" id="halo" cx="140" cy="140" r="104"></circle>
       <circle class="ring-track" cx="140" cy="140" r="120"></circle>
       <circle class="seg-back" id="segBack" cx="140" cy="140" r="120" transform="rotate(-90 140 140)"></circle>
@@ -513,6 +533,8 @@
       <svg viewBox="0 0 300 300" aria-hidden="true">
         <path class="bx-track" id="bxPath" d="M47.029 252.971 A24 24 0 0 1 40 236 L40 64 A24 24 0 0 1 64 40 L236 40 A24 24 0 0 1 260 64 L260 236 A24 24 0 0 1 236 260 L64 260 A24 24 0 0 1 47.029 252.971 Z"></path>
       </svg>
+      <span class="bx-panel" id="bxPanel" aria-hidden="true"></span>
+      <span class="bx-ring" aria-hidden="true"></span>
       <canvas class="bx-glow" id="bxGlow" aria-hidden="true"></canvas>
       <svg viewBox="0 0 300 300" aria-hidden="true">
         <defs>
@@ -1058,16 +1080,15 @@
   const totalSets = () => (st.mode === 'min' ? st.mins * 3 : st.sets); // 3 sets per minute: always whole sets
 
   /* ---------- geometry ---------- */
-  const box = $('bxBox'), path = $('bxPath'), glow = $('bxGlow'), dot = $('bxDot'), halo = $('bxHaloC'), quote = $('bxQuote');
+  const box = $('bxBox'), path = $('bxPath'), glow = $('bxGlow'), dot = $('bxDot'), halo = $('bxHaloC'), panel = $('bxPanel'), quote = $('bxQuote');
   const L = path.getTotalLength(), Q = L / 4;
-  const SOFT = 14;      // depth of the fill's soft surface, centred on the light's height
-  let surfaceY = 260;
   const ease = p => 0.5 - 0.5 * Math.cos(Math.PI * p);
   function setDot(len) {
     const pt = path.getPointAtLength(((len % L) + L) % L);
     const x = pt.x.toFixed(2), y = pt.y.toFixed(2);
     dot.setAttribute('cx', x); dot.setAttribute('cy', y); halo.setAttribute('cx', x); halo.setAttribute('cy', y);
-    surfaceY = pt.y;   // the fill's soft surface follows the light's height (painted with the trail)
+    // the fill's soft surface sits at the light's height (panel top is at 50.5 units; 3 units = 1cqw)
+    panel.style.setProperty('--lvl', `${((pt.y - 50.5) / 3).toFixed(3)}cqw`);
   }
   // Gentle, breath-like motion along each side: the light eases out of a corner, glides along the side and eases into
   // the next corner. It never stops, its speed is continuous from side to side, and it passes every corner exactly
@@ -1097,50 +1118,16 @@
     const lap = Math.floor(P / L), x = (P - lap * L) / L * 512, i = Math.min(511, Math.floor(x));
     return angTab[i] + (angTab[i + 1] - angTab[i]) * (x - i) + lap * 2 * Math.PI;
   }
-  let theme = { f1: '#e6eef3', f2: '#c3d5e1', tr: '#dde6ec' }, layerKey = '';
-  const panelC = document.createElement('canvas'), trackC = document.createElement('canvas');
   function trailRGB() {
     const now = performance.now();
-    if (!rgb || now - rgbAt > 500) {
-      rgbAt = now; const cs = getComputedStyle(glow), m = cs.color.match(/[\d.]+/g); rgb = m ? m.slice(0, 3).join(',') : '142,170,189';
-      const v = n => cs.getPropertyValue(n).trim();
-      theme = { f1: v('--b-fill1') || theme.f1, f2: v('--b-fill2') || theme.f2, tr: v('--b-track') || theme.tr };
-    }
+    if (!rgb || now - rgbAt > 500) { rgbAt = now; const m = getComputedStyle(glow).color.match(/[\d.]+/g); rgb = m ? m.slice(0, 3).join(',') : '142,170,189'; }
     return rgb;
-  }
-  // Soft shapes are drawn as blurred shadows (supported everywhere), then coloured: no hard edges anywhere.
-  function softShape(cv, px, blur, drawShape, paint) {
-    const c = cv.getContext('2d'), k = px / 300; cv.width = px; cv.height = px;
-    c.save(); c.shadowColor = '#000'; c.shadowBlur = blur * k; c.shadowOffsetX = px * 2;
-    c.setTransform(k, 0, 0, k, -px * 2, 0); drawShape(c); c.restore();
-    c.globalCompositeOperation = 'source-in'; c.setTransform(k, 0, 0, k, 0, 0); paint(c); c.globalCompositeOperation = 'source-over';
-  }
-  function softLayers(px) {
-    const key = [px, theme.f1, theme.f2, theme.tr].join('|');
-    if (key === layerKey) return; layerKey = key;
-    // the inner panel that fills with the breath: soft-edged, light at the top and deeper below
-    softShape(panelC, px, 7, c => { c.beginPath(); c.moveTo(70, 54); c.arcTo(246, 54, 246, 246, 16); c.arcTo(246, 246, 54, 246, 16); c.arcTo(54, 246, 54, 54, 16); c.arcTo(54, 54, 246, 54, 16); c.closePath(); c.fill(); },
-      c => { const g = c.createLinearGradient(0, 54, 0, 246); g.addColorStop(0, theme.f1); g.addColorStop(1, theme.f2); c.fillStyle = g; c.fillRect(0, 0, 300, 300); });
-    // the track the light travels on, with softened edges
-    softShape(trackC, px, 2.5, c => { c.lineWidth = 9; c.stroke(ring); }, c => { c.fillStyle = theme.tr; c.fillRect(0, 0, 300, 300); });
-  }
-  // The fill: the soft panel, faded out above the light's height through a smooth band (no waterline).
-  function paintBase(px) {
-    softLayers(px);
-    gctx.setTransform(1, 0, 0, 1, 0, 0); gctx.drawImage(panelC, 0, 0);
-    gctx.setTransform(px / 300, 0, 0, px / 300, 0, 0);
-    const g = gctx.createLinearGradient(0, surfaceY - SOFT / 2, 0, surfaceY + SOFT / 2);
-    [1, 0.84, 0.5, 0.16, 0].forEach((a, i) => g.addColorStop(i / 4, `rgba(0,0,0,${a})`));   // smooth (eased) edge
-    gctx.globalCompositeOperation = 'destination-out'; gctx.fillStyle = g; gctx.fillRect(0, 0, 300, 300);
-    gctx.globalCompositeOperation = 'source-over';
-    gctx.setTransform(1, 0, 0, 1, 0, 0); gctx.drawImage(trackC, 0, 0);
   }
   // now: seconds since the first inhale; end: when the light stopped (Infinity while it is moving); mult: overall strength
   function drawTrail(now, end = Infinity, mult = 1) {
     const dpr = Math.min(3, window.devicePixelRatio || 1), px = Math.max(1, Math.round(glow.clientWidth * dpr));
     if (glow.width !== px) { glow.width = px; glow.height = px; }
     gctx.setTransform(1, 0, 0, 1, 0, 0); gctx.clearRect(0, 0, px, px);
-    trailRGB(); paintBase(px);
     if (!(now > 0) || mult <= 0.001) return;
     const span = Math.min(now, LIFE), t0 = now - span;
     const tail = posAt(Math.min(t0, end)), head = posAt(Math.min(now, end));

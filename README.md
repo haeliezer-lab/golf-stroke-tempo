@@ -167,7 +167,7 @@ const VERSION = 'golf-stroke-tempo-v3';   // was v2
 
 Current Safari (iOS 15 and later), Chrome, Edge and Firefox. Uses the Web Audio API for timing, the Screen Wake Lock API where available, and a service worker for offline use.
 
-**Dark mode:** the app follows your phone's light or dark setting. Some browsers darken pages on their own instead (Samsung Internet's dark mode, and some in-app browsers), which can leave white text on white. The app detects this and switches to its own dark theme, so everything stays readable. On Samsung Internet you can also turn on **Labs → Use website dark theme**.
+**Dark mode:** the app follows your phone's light or dark setting. Some browsers darken pages on their own instead (Samsung Internet's dark mode, and some in-app browsers), which can leave white text on white. The app is built for this: everything that has text on it is drawn as a normal page element, so the browser recolours the text and what is behind it together, and where the browser lets it detect the darkening (Chrome, Android in-app browsers) the app switches to its own dark theme. On Samsung Internet you can also turn on **Labs → Use website dark theme**.
 
 ## Privacy
 
